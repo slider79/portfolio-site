@@ -90,7 +90,7 @@
     </div>
     <div class="work__head">
       <h2 class="mono-h" data-scramble>the work</h2>
-      <p class="work__sub">Eleven of these are the Spiral Labs internship, in the order I built them. The rest are mine.</p>
+      <p class="work__sub">Everything I have shipped. Click a card to load it into the machine above, or open it directly.</p>
       <div class="work__prog"><span id="workProg"></span></div>
     </div>
     <div class="work__track" id="workTrack"></div>
@@ -107,6 +107,11 @@
     <h2 class="mono-h" data-scramble>history</h2>
 
     <ol class="tl" id="timeline">
+      <li class="tl__i tl__i--edu" data-when="Aug 2023 to Aug 2027">
+        <h3>BSc Software Engineering</h3>
+        <p class="tl__org">FAST NUCES, Lahore</p>
+        <p>Software Design &amp; Architecture, Database Systems, Design Patterns, Computer Networks, Operating Systems.</p>
+      </li>
       <li class="tl__i" data-when="Jul 2026 to present">
         <h3>Artificial Intelligence Intern</h3>
         <p class="tl__org">Spiral Labs · NASTP, Lahore · Hybrid</p>
@@ -136,11 +141,6 @@
         <h3>Full-Stack Developer</h3>
         <p class="tl__org">BeWhoop · Remote</p>
         <p>Web pages in Bootstrap and jQuery, then a standalone .NET ticketing system. Sprints run in Jira.</p>
-      </li>
-      <li class="tl__i tl__i--edu" data-when="Aug 2023 to Aug 2027">
-        <h3>BSc Software Engineering</h3>
-        <p class="tl__org">FAST NUCES, Lahore</p>
-        <p>Software Design &amp; Architecture, Database Systems, Design Patterns, Computer Networks, Operating Systems.</p>
       </li>
     </ol>
 
@@ -216,9 +216,10 @@
 
 </main>
 
-<!-- Drop your own track here and the toggle un-hides itself. Nothing ships
-     with the site, so there is no audio to autoplay at anyone by default. -->
-<audio id="bgAudio" src="assets/audio/theme.mp3" loop preload="none" playsinline></audio>
+<!-- No src on purpose. js/main.js sets it only when SJ_MUSIC is turned on in
+     js/data.js, so a site with no track never requests one and never autoplays
+     at anyone. -->
+<audio id="bgAudio" loop preload="none" playsinline></audio>
 
 <script type="importmap">
 { "imports": {

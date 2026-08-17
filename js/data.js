@@ -21,7 +21,6 @@ window.SJ_WORKS = [
     id: 'vox',
     title: 'Vox',
     tagline: 'A real-time AI voice agent',
-    org: 'SPIRAL LABS',
     kind: 'VOICE AGENT',
     year: '2026',
     accent: '#ff5d3a',
@@ -35,7 +34,6 @@ window.SJ_WORKS = [
     id: 'memory-chat',
     title: 'Memory Chat',
     tagline: 'A chatbot that actually remembers you',
-    org: 'SPIRAL LABS',
     kind: 'MEMORY',
     year: '2026',
     accent: '#7b3fe4',
@@ -49,7 +47,6 @@ window.SJ_WORKS = [
     id: 'codex',
     title: 'Codex',
     tagline: 'A RAG assistant with live source control',
-    org: 'SPIRAL LABS',
     kind: 'RAG',
     year: '2026',
     accent: '#5b57ef',
@@ -63,7 +60,6 @@ window.SJ_WORKS = [
     id: 'delphi',
     title: 'Delphi',
     tagline: 'A voice-first RAG assistant',
-    org: 'SPIRAL LABS',
     kind: 'VOICE RAG',
     year: '2026',
     accent: '#e0224c',
@@ -77,7 +73,6 @@ window.SJ_WORKS = [
     id: 'dispatch',
     title: 'Dispatch',
     tagline: 'An autonomous newsroom of three agents',
-    org: 'SPIRAL LABS',
     kind: 'MULTI-AGENT',
     year: '2026',
     accent: '#2f7fed',
@@ -91,7 +86,6 @@ window.SJ_WORKS = [
     id: 'scribe',
     title: 'Scribe',
     tagline: 'An agent that finds a video and transcribes it',
-    org: 'SPIRAL LABS',
     kind: 'TOOL-CALLING',
     year: '2026',
     accent: '#12a05a',
@@ -105,7 +99,6 @@ window.SJ_WORKS = [
     id: 'persona',
     title: 'Persona',
     tagline: 'Five scoped personalities that refuse to break character',
-    org: 'SPIRAL LABS',
     kind: 'CHAT',
     year: '2026',
     accent: '#ff4b4b',
@@ -119,7 +112,6 @@ window.SJ_WORKS = [
     id: 'mirage',
     title: 'Mirage',
     tagline: 'A conversational image generator',
-    org: 'SPIRAL LABS',
     kind: 'IMAGE GEN',
     year: '2026',
     accent: '#9b5cf6',
@@ -133,7 +125,6 @@ window.SJ_WORKS = [
     id: 'anon-mesh',
     title: 'ANON Mesh',
     tagline: 'An anonymous P2P messaging network',
-    org: 'PERSONAL',
     kind: 'DISTRIBUTED',
     year: '2026',
     accent: '#22c55e',
@@ -147,7 +138,6 @@ window.SJ_WORKS = [
     id: 'onyourway',
     title: 'OnYourWay',
     tagline: 'A campus ride-sharing app',
-    org: 'PERSONAL',
     kind: 'FULL-STACK',
     year: '2025',
     accent: '#f59e0b',
@@ -161,7 +151,6 @@ window.SJ_WORKS = [
     id: 'bsdi-fts',
     title: 'BSDI FTS',
     tagline: 'Digitising government file routing',
-    org: 'WORK',
     kind: 'DJANGO',
     year: '2026',
     accent: '#0ea5e9',
@@ -175,7 +164,6 @@ window.SJ_WORKS = [
     id: 'llms-comparison',
     title: 'LLMs Comparison',
     tagline: 'Five models, one document, every claim checked',
-    org: 'SPIRAL LABS',
     kind: 'RESEARCH',
     year: '2026',
     accent: '#eab308',
@@ -189,7 +177,6 @@ window.SJ_WORKS = [
     id: 'web-scraping',
     title: 'Scraping Tools',
     tagline: 'Four scrapers, tested rather than read about',
-    org: 'SPIRAL LABS',
     kind: 'RESEARCH',
     year: '2026',
     accent: '#14b8a6',
@@ -203,7 +190,6 @@ window.SJ_WORKS = [
     id: 'frontend-tools',
     title: 'Frontend Shortcuts',
     tagline: 'Thirteen design-to-code tools, every number checked',
-    org: 'SPIRAL LABS',
     kind: 'RESEARCH',
     year: '2026',
     accent: '#ec4899',
@@ -216,5 +202,12 @@ window.SJ_WORKS = [
 ];
 
 /* The hero cut-out is swappable. 'cards' is the pack of playing cards,
-   'dice' is the original. One word, nothing else to change. */
+   'dice' is the original. One word, nothing else to change. Whichever one the
+   hero does not take goes to the contact section. */
 window.SJ_HERO_CUTOUT = 'cards';
+
+/* Background music. Put a track you have the rights to at
+   assets/audio/theme.mp3, flip this to true, and the toggle appears in the
+   corner. It always starts silent and remembers the choice for the session.
+   Left false, the file is never requested at all. */
+window.SJ_MUSIC = false;

@@ -7,6 +7,8 @@
   'use strict';
 
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* live, not a snapshot: a phone rotated to landscape crosses this boundary */
+  var narrow = window.matchMedia('(max-width: 860px)');
 
   /* shared bus ------------------------------------------------ */
   var SK = window.SK = {
@@ -205,7 +207,11 @@
   var soundOnByDefault = false;
   try { if (sessionStorage.getItem('sj_sound') === '1') soundOnByDefault = true; } catch (e) {}
 
-  if (audio) {
+  /* Opt-in, so a site with no track never requests one. Probing for the file
+     to decide whether to show the toggle meant a 404 in the console on every
+     single load, which is the first thing anyone inspecting the page sees. */
+  if (audio && window.SJ_MUSIC) {
+    audio.src = 'assets/audio/theme.mp3';
     var revealed = false;
     var reveal = function () {
       if (revealed) return;
@@ -305,7 +311,11 @@
       backdrop.style.backgroundColor = 'rgb(' + v + ',' + v + ',' + v + ')';
     }
 
-    /* --- per-element drift --- */
+    /* --- per-element drift ---
+       Skipped on narrow screens, where the stylesheet pins --ty to 0 anyway.
+       Without this the loop still ran a getBoundingClientRect per mover per
+       scroll frame, forcing layout, to compute a value nothing would use. */
+    if (narrow.matches) return;
     for (var j = 0; j < movers.length; j++) {
       var m = movers[j];
       if (!m.__d) continue;
@@ -525,7 +535,10 @@
   /* reading as a rendering fault.                                */
   /* ---------------------------------------------------------- */
   (function () {
-    if (reduce) return;
+    /* Desktop only. The skew is applied to .wrap and to all fourteen project
+       cards, so every scroll frame re-rasterises them. That is affordable on a
+       pointer device and is a large part of the mobile scroll stutter. */
+    if (reduce || window.matchMedia('(max-width: 860px)').matches) return;
     var last = window.scrollY, sk = 0, raf = null;
 
     function loop() {

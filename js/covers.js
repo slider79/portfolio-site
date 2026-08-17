@@ -991,8 +991,9 @@
       ctx.restore();
     }
 
-    /* --- org stamp, top right -------------------------------- */
-    var stamp = work.org;
+    /* --- corner stamp, top right ------------------------------
+       The project's own category, not who commissioned it. */
+    var stamp = work.kind;
     var sw = trackedWidth(ctx, stamp, 15, 2.4) + 20;
     ctx.fillStyle = rgba(a, 0.85);
     ctx.fillRect(W - pad - 12 - sw, pad + 14, sw, 24);
@@ -1008,10 +1009,10 @@
     ctx.fillText(work.title, 58, titleY);
     ctx.shadowBlur = 0;
 
-    /* kind + year, riding the baseline of the title */
+    /* year, riding the baseline of the title. The category moved up to the
+       corner stamp, so repeating it here would say it twice. */
     var tw = ctx.measureText(work.title).width;
-    label(ctx, work.kind + '  ·  ' + work.year, 16, 58 + tw + 22, titleY - 4,
-      rgba(a, 0.9), 2);
+    label(ctx, work.year, 16, 58 + tw + 22, titleY - 4, rgba(a, 0.9), 2);
 
     /* --- tagline --------------------------------------------- */
     ctx.font = '22px ' + F;

@@ -33,6 +33,18 @@
   --el-inv:1;
   --el-blend:screen;
 
+  /* Halo behind any type that can end up over a cut-out. It is painted in
+     --paper, the tone that section is actually printed on, so it reads as a
+     soft glow of the background pushing back through the artwork. That makes
+     it automatically correct in both polarities: black behind white type on a
+     dark page, white behind black type once inverted, with nothing to keep in
+     sync. Three stacked blurs rather than one, because a single large blur is
+     too diffuse to lift text off a busy graphic. */
+  --halo:
+    0 0 .22em var(--paper),
+    0 0 .5em  var(--paper),
+    0 0 1em   var(--paper);
+
   --f:'Helv','Helvetica Neue',Helvetica,Arial,sans-serif;
   --f-vcr:'VCR','Helv',monospace;
   --ease:cubic-bezier(.16,1,.3,1);
@@ -170,6 +182,24 @@ body.is-invert .boot{--el-inv:1}
 .contact .stage{--fade-b:0}
 .lay{position:absolute;margin:0;z-index:5;line-height:1;letter-spacing:-.02em;font-weight:400;transform:translateY(var(--ty,0))}
 
+/* Anything that can share a box with a cut-out gets the halo. Sitting above
+   the artwork in z-order was never enough on its own: a bright passage of a
+   screen-blended cut-out and white type are the same tone, so the letters
+   dissolved into it. Excluded deliberately: .rail, .keys and .gauge, which
+   composite with `difference` and are already legible against anything. */
+.lay,
+.mono-h,
+.mono-sub,
+.machine__intro p,
+.work__sub,
+.tl__i h3,
+.tl__org,
+.tl__i p,
+.lead p,
+.stack__g h3{
+  text-shadow:var(--halo);
+}
+
 /* tracking overlay, above the cut-outs, under the type, never interactive */
 .trk{
   position:absolute;inset:0;width:100%;height:100%;z-index:3;
@@ -194,8 +224,12 @@ body.is-invert .boot{--el-inv:1}
    cards is 896x1184 and the dice 760x760, hence the two widths. */
 .el--hero-cut{left:32.45%;top:19.26%;width:35.10%}
 .el--hero-cut[data-cut="cards"]{left:35.5%;top:12%;width:29%}
-.lay--shuja{left:26.0%;top:43.0%;font-size:4cqw;font-style:italic}
-.lay--jamal{left:56.6%;top:43.0%;font-size:4cqw;font-style:italic}
+/* Anchored to the stage's centre line, not to fixed left offsets: the two
+   halves flank the cut-out (which spans 35.5% to 64.5%) whatever the name
+   measures, so neither word lands on top of the artwork and neither needs a
+   magic number recomputed when the copy or the webfont changes. */
+.lay--shuja{right:66%;left:auto;text-align:right;top:43.0%;font-size:4cqw;font-style:italic}
+.lay--jamal{left:66%;top:43.0%;font-size:4cqw;font-style:italic}
 .lay--role{
   left:50%;top:53.5%;transform:translate(-50%,var(--ty,0));
   font-family:var(--f-vcr);font-size:1.12cqw;letter-spacing:.16em;
@@ -386,11 +420,20 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
      as the aspect changes, which is what put the type on top of it.
      Half-widths differ per artwork: dice is square (0.5), the card pack is
      896x1184 so width = height * 0.757 and half is 0.3785. */
-  .el--hero-cut{width:auto;height:32cqh;left:calc(50cqw - 16.24cqh);top:18cqh}
-  .el--hero-cut[data-cut="cards"]{height:34cqh;left:calc(50cqw - 12.87cqh);top:16cqh}
+  /* width:auto has to be repeated on the attribute rules. The desktop
+     `[data-cut="cards"]{width:29%}` above is specificity (0,2,0); the plain
+     `.el--hero-cut{width:auto}` here is (0,1,0), and a media query adds no
+     specificity of its own. So the percentage width kept winning inside the
+     query and the artwork rendered at 29% of a phone (109px) stretched to a
+     34cqh height: squashed, and offset left, because `left` was calculated
+     from the width it should have had. */
+  .el--hero-cut{width:auto;height:32cqh;left:calc(50cqw - 16cqh);top:18cqh}
+  .el--hero-cut[data-cut="cards"]{width:auto;height:34cqh;left:calc(50cqw - 12.87cqh);top:16cqh}
+  /* .13em each side, so the two halves read as "shuja jamal." and not as one
+     run-together word the way "shutter"+"kif." was meant to */
   .lay--shuja,.lay--jamal{top:57cqh;font-size:11cqw;white-space:nowrap}
-  .lay--shuja{left:auto;right:50%;text-align:right}
-  .lay--jamal{left:50%;right:auto;text-align:left}
+  .lay--shuja{left:auto;right:calc(50% + .13em);text-align:right}
+  .lay--jamal{left:calc(50% + .13em);right:auto;text-align:left}
   .lay--role{top:68cqh;font-size:2.9cqw;letter-spacing:.12em;white-space:normal;
     width:86%;left:7%;transform:translateY(var(--ty,0));text-align:center}
 
@@ -405,8 +448,9 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
      fixed 26% to 70% band whatever the phone's aspect, so the two words can sit
      just outside it without ever landing on top of it. Source is 896x1184, so
      width = height * 0.757 and half of that is 0.3785. */
+  /* width:auto repeated for the same specificity reason as the hero cut-out */
   .el--contact-cut{width:auto;height:40cqh;left:calc(50cqw - 15.14cqh);top:22cqh}
-  .el--contact-cut[data-cut="dice"]{height:34cqh;left:calc(50cqw - 17cqh);top:25cqh}
+  .el--contact-cut[data-cut="dice"]{width:auto;height:34cqh;left:calc(50cqw - 17cqh);top:25cqh}
   .lay--contact,.lay--me{
     left:0;right:0;width:100%;text-align:center;
     font-size:12cqw;white-space:nowrap;
@@ -422,6 +466,16 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
      so it stays centred at any phone aspect. Source is 1248x1152, so
      width = height * 1.0833 and half of that is 0.5417. */
   .el--flower{width:auto;height:74cqh;left:calc(50cqw - 40.1cqh);top:13cqh}
+
+  /* A near-fullscreen image that is simultaneously rotating, inverted by a
+     CSS filter and screen-blended is the most expensive thing on the page,
+     and on a phone it is composited over the WebGL canvas every frame. Park
+     it: the cut-out stays, the perpetual rotation does not. */
+  .el--flower,.el--star-a,.el--star-b{animation:none}
+
+  /* The scroll parallax moves seven elements per frame on a device that is
+     already spending its budget on the machine. */
+  .el,.lay{--ty:0 !important}
 }
 
 /* ============ REDUCED MOTION ============ */
@@ -512,6 +566,12 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
   --pin-span:0px;
   height:calc(100svh + var(--pin-span));
   position:relative;
+  /* clip, NOT hidden. `overflow:hidden` makes this a scroll container, and a
+     position:sticky child can only stick inside its nearest scrollport, so the
+     inherited .sec rule silently un-pinned the rail: the cards scrolled away
+     after one viewport and left three thousand pixels of empty section behind
+     them. `clip` still clips but creates no scrollport, so the pin works. */
+  overflow:clip;
 }
 .work__pin{
   position:sticky;top:0;height:100svh;
@@ -627,7 +687,7 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
   width:9px;height:9px;translate:-4px 0;
   border:1px solid currentColor;background:var(--paper,var(--dark));
 }
-.tl__i:not(.tl__i--past):not(.tl__i--edu)::before{background:currentColor}
+.tl__i:not(.tl__i--past)::before{background:currentColor}
 .tl__i::after{
   content:attr(data-when);
   position:absolute;right:0;top:calc(clamp(1.1rem,2.4vh,1.7rem) + .1rem);
@@ -640,8 +700,10 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
   letter-spacing:.1em;opacity:.5}
 .tl__i p:last-child{margin:0;font-size:.92rem;line-height:1.6;opacity:.72;
   max-width:62ch}
-.tl__i--past,.tl__i--edu{opacity:.001}
-.tl__i--past.is-in,.tl__i--edu.is-in{opacity:.72}
+/* Only finished roles are dimmed. The degree leads the timeline now, so it is
+   current, not archive, and reads at full strength. */
+.tl__i--past{opacity:.001}
+.tl__i--past.is-in{opacity:.72}
 
 .lead{margin-top:clamp(2.4rem,6vh,4rem);padding-top:clamp(1.6rem,4vh,2.4rem);
   border-top:1px solid currentColor;border-color:color-mix(in srgb,currentColor 18%,transparent)}

@@ -47,7 +47,11 @@ function init() {
   /* RENDERER / SCENE                                            */
   /* ---------------------------------------------------------- */
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+  /* Phones ship 3x screens and the slowest GPUs. Rendering a bloom pass plus
+     a CRT shader at 3x is most of the mobile frame budget, and the effect is
+     a heavy pixel grid anyway, so the extra samples buy almost nothing. */
+  const mobile = window.matchMedia('(max-width: 860px)').matches;
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, mobile ? 1.5 : 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -781,10 +785,25 @@ function init() {
     return new THREE.Box3().setFromObject(model);
   }
 
-  function resize() {
+  /* Mobile browsers fire `resize` continuously while the URL bar collapses and
+     expands during a scroll. Acting on every one of those meant reallocating
+     the composer's render targets and re-solving the camera fit mid-gesture,
+     which is what read as the machine zooming in on scroll up and out on
+     scroll down, and what made the whole page stutter.
+
+     Width is the dimension that actually changes the composition. A height
+     change on its own, below the tallest browser chrome, is the URL bar and
+     nothing else, so it is ignored. */
+  let lastW = 0, lastH = 0;
+  const CHROME = 200;                 // px of browser UI that can come and go
+
+  function resize(force) {
     if (!stage) return;
     const w = stage.clientWidth, h = stage.clientHeight;
     if (!w || !h) return;
+    if (force !== true && w === lastW && Math.abs(h - lastH) < CHROME) return;
+    lastW = w; lastH = h;
+
     renderer.setSize(w, h, false);
     composer.setSize(w, h);
     bloom.resolution.set(w, h);
@@ -793,8 +812,10 @@ function init() {
     camera.updateProjectionMatrix();
     if (modelReady) fitToView();
   }
-  window.addEventListener('resize', resize, { passive: true });
-  resize();
+  window.addEventListener('resize', () => resize(), { passive: true });
+  /* an orientation change is a real layout change, not chrome moving */
+  window.addEventListener('orientationchange', () => resize(true), { passive: true });
+  resize(true);
 
   let inView = true;
   if ('IntersectionObserver' in window) {

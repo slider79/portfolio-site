@@ -62,8 +62,7 @@ derives from that array. Nothing is duplicated in the HTML.
   id: 'thing',              // also the DOM id of its card: #p-thing
   title: 'Thing',
   tagline: 'One line, lower case',
-  org: 'SPIRAL LABS',       // or PERSONAL / WORK, printed as the corner stamp
-  kind: 'RAG',
+  kind: 'RAG',              // also printed as the corner stamp on the cover
   year: '2026',
   accent: '#5b57ef',        // drives the cover AND the light it casts
   glyph: 'vectors',         // a renderer in js/covers.js
@@ -91,9 +90,15 @@ is used twice and none goes unused.
 
 ## Music
 
-There is no audio file in the repo and the toggle stays hidden. Drop an
-`assets/audio/theme.mp3` you have the rights to and the control appears on its
-own, defaulting to off.
+Off, and not even requested. Put a track you have the rights to at
+`assets/audio/theme.mp3` and flip the switch in `js/data.js`:
+
+```js
+window.SJ_MUSIC = true;
+```
+
+The toggle then appears in the corner, starts silent, and remembers the choice
+for the session.
 
 ---
 

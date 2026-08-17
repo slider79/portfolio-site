@@ -49,7 +49,7 @@
 
     el.innerHTML =
       '<div class="pcard__top">' +
-        '<span class="pcard__org">' + esc(w.org) + '</span>' +
+        '<span class="pcard__org">' + esc(w.kind) + '</span>' +
         '<span class="pcard__no">' + String(i + 1).padStart(2, '0') + '</span>' +
       '</div>' +
       '<h3 class="pcard__title">' + esc(w.title) + '</h3>' +
