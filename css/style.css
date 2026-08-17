@@ -33,23 +33,6 @@
   --el-inv:1;
   --el-blend:screen;
 
-  /* Halo behind any type that can end up over a cut-out. It is painted in
-     --paper, the tone that section is actually printed on, so it reads as the
-     background pushing back through the artwork. That makes it automatically
-     correct in both polarities: black behind white type on a dark page, white
-     behind black type once inverted, with nothing to keep in sync.
-
-     Five layers, not one. Stacked shadows of a single colour compound their
-     alpha, so the two tight ones build an almost solid knockout right at the
-     letterforms while the wide ones fade it out. A single large blur, or even
-     three, is too diffuse to lift small type off a bright passage. */
-  --halo:
-    0 0 .1em  var(--paper),
-    0 0 .1em  var(--paper),
-    0 0 .25em var(--paper),
-    0 0 .6em  var(--paper),
-    0 0 1.2em var(--paper);
-
   --f:'Helv','Helvetica Neue',Helvetica,Arial,sans-serif;
   --f-vcr:'VCR','Helv',monospace;
   --ease:cubic-bezier(.16,1,.3,1);
@@ -144,11 +127,11 @@ body.is-invert .sec--dark {--el-blend:multiply;--el-inv:0}
 }
 body.is-invert .boot{--el-inv:1}
 .boot.is-done{opacity:0;visibility:hidden}
-/* The wordmark is a wide lockup (roughly 5.8:1), not the square mark this
-   replaced, so it needs a much larger width to reach a legible glyph size.
+/* The wordmark is a wide lockup (roughly 8:1), not the square mark this
+   replaced, so it needs a much larger width to reach a legible cell size.
    image-rendering is moot for an SVG of hard-edged rects but costs nothing
    and keeps the rule correct if a bitmap is ever dropped back in. */
-.boot__img{width:min(560px,82vw);image-rendering:pixelated}
+.boot__img{width:min(620px,88vw);image-rendering:pixelated}
 .boot__bar{width:min(230px,44vw);height:2px;background:currentColor;opacity:.18;position:relative;overflow:hidden}
 .boot__bar span{position:absolute;inset:0 100% 0 0;background:var(--on-light);transition:right .16s linear}
 .boot__pct{font-family:var(--f-vcr);font-size:.95rem;letter-spacing:.14em;color:var(--on-light);opacity:.55}
@@ -208,33 +191,45 @@ body.is-invert .boot{--el-inv:1}
 .contact .stage{--fade-b:0}
 .lay{position:absolute;margin:0;z-index:5;line-height:1;letter-spacing:-.02em;font-weight:400;transform:translateY(var(--ty,0))}
 
-/* Anything that can share a box with a cut-out gets the halo. Sitting above
-   the artwork in z-order was never enough on its own: a bright passage of a
-   screen-blended cut-out and white type are the same tone, so the letters
-   dissolved into it. Excluded deliberately: .rail, .keys and .gauge, which
-   composite with `difference` and are already legible against anything. */
-.lay,
-.mono-h,
-.mono-sub,
-.machine__intro p,
-.work__sub,
-.work__count,
-.tl__i h3,
-.tl__org,
-.tl__i p,
-.lead p,
-.lead b,
-.stack__g h3,
-.stack__g li,
-.cue{
-  text-shadow:var(--halo);
-}
+/* ---- type that can sit over artwork -------------------------------------
+   Difference blending, which is the same trick .ctl, .rail, .keys and .trk
+   already use, extended to the body type.
 
-/* The timeline dates are generated content. text-shadow inherits, but only
-   from a rule that actually matches the parent, and the list above targets
-   .tl__i's children rather than .tl__i itself, so ::after was getting none
-   of it and the dates stayed the one unreadable thing over the terminal. */
-.tl__i::after{text-shadow:var(--halo)}
+   |backdrop - source| computed per pixel. Painting the type pure white makes
+   that self-solving in every case:
+
+     white type over black paper   -> |0   - 255| = 255, stays white
+     white type over white artwork -> |255 - 255| = 0,   flips to black
+     inverted mode, white paper    -> |255 - 255| = 0,   reads as black type
+     inverted, over black artwork  -> |0   - 255| = 255, flips to white
+
+   So only the overlapping pixels invert, the split follows the artwork
+   exactly, and it re-solves itself every frame as the cut-outs drift and
+   rotate underneath. Nothing is positional and nothing is hardcoded.
+
+   This replaces a text-shadow halo, which was the wrong mechanism: it lit a
+   soft box behind whole glyphs rather than inverting the overlap, and being
+   painted in --paper it only ever pushed one way.
+
+   The colour must be literal white, NOT var(--on-dark): under difference the
+   polarity is a result of the blend, so a colour that already flips would
+   cancel it out and the type would vanish into the paper.
+
+   Applied to the block, not to each heading and paragraph. An element only
+   blends with the backdrop of the stacking context it sits in, and a
+   `position:relative` carrying a `z-index` forms one, so blending the
+   individual children would blend them against their own empty wrapper
+   instead of against the artwork. Blending the wrapper composites the whole
+   block against everything painted below it, which is the cut-out. For the
+   same reason the wrappers below must not carry a z-index of their own. */
+.lay,
+.machine__intro,
+.work__head,
+.wrap,
+.cue{
+  color:#fff;
+  mix-blend-mode:difference;
+}
 
 /* tracking overlay, above the cut-outs, under the type, never interactive */
 .trk{
@@ -534,12 +529,16 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
    have no comp to honour and should reflow rather than scale, so
    they use an ordinary centred measure instead.
    ============================================================ */
+/* No z-index and no transform, both deliberate: either one would make this a
+   stacking context, and a blended element only sees the backdrop of the
+   context it lives in, so the type would stop inverting over the cut-out.
+   Paint order is instead carried by DOM order, since the deco stage is an
+   earlier sibling. The velocity skew moved to .pcard for the same reason. */
 .wrap{
-  position:relative;z-index:5;
+  position:relative;
   width:min(1180px, 100% - var(--gutter) * 2);
   margin-inline:auto;
   padding-block:clamp(5rem,12vh,9rem);
-  transform:skewY(var(--skew,0deg));
 }
 
 .mono-h{
@@ -554,6 +553,13 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
 }
 
 /* ---- 02 machine, intro copy above the hardware ---- */
+/* Keeps its z-index, unlike .wrap and .work__head. The stage and the canvas
+   below it carry positive z-indexes, so without one this paints underneath
+   the machine. That is safe here only because the blend is on this element
+   rather than on its children: a stacking context on the blended element
+   itself is fine, it is an isolating ANCESTOR that would truncate the
+   backdrop. Blending the wrapper composites it against the flower and the
+   PSP canvas both. */
 .machine__intro{
   position:relative;z-index:6;
   width:min(640px, 100% - var(--gutter) * 2);
@@ -610,8 +616,9 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
   display:flex;align-items:center;
   overflow:clip;                     /* clip, not hidden: see .stage cut-outs */
 }
+/* no z-index: see the blend note on .wrap */
 .work__inner{
-  position:relative;z-index:5;width:100%;
+  position:relative;width:100%;
   padding-block:clamp(3rem,8vh,5rem);
 }
 .work__deco{z-index:0}
@@ -619,7 +626,7 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
 .el--umd{left:78%;top:52%;width:24%;opacity:.5}
 
 .work__head{
-  position:relative;z-index:5;
+  position:relative;
   padding-inline:var(--gutter);
   margin-bottom:clamp(1.4rem,3.5vh,2.4rem);
 }
@@ -628,7 +635,7 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
 
 /* ---- the scroller ---- */
 .work__scroller{
-  position:relative;z-index:5;
+  position:relative;z-index:5;   /* above the deco; not blended */
   overflow-x:auto;overflow-y:hidden;
   /* Snap points are only honoured against the scrollport's own padding box,
      so the inline padding lives here rather than on the track. Without the
