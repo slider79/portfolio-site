@@ -919,11 +919,19 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
    composited with difference, so it is always the exact inverse of
    whatever is under it, and any text it passes over flips inside it.
    ============================================================ */
+/* Fixed box, resized with `scale`, never with width/height/margin. Animating
+   the box would put a layout pass on the one element that moves on every
+   pointer event, and the negative margins that centre it on the pointer would
+   have to be animated in step. Scale is composited, and because the disc is
+   already centred it scales about the pointer for free.
+
+   `scale` is its own property rather than part of the transform: JS owns the
+   transform, writing only --cx and --cy, so growth stays purely declarative
+   and the two never have to be rewritten together. */
 .cursor{
   position:fixed;left:0;top:0;
-  width:var(--cur,26px);height:var(--cur,26px);
-  margin-left:calc(var(--cur,26px) / -2);
-  margin-top:calc(var(--cur,26px) / -2);
+  width:26px;height:26px;
+  margin:-13px 0 0 -13px;
   border-radius:50%;
   background:#fff;
   mix-blend-mode:difference;
@@ -931,12 +939,12 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
   z-index:9999;
   /* parked off-screen until the first real pointer move */
   transform:translate3d(var(--cx,-200px),var(--cy,-200px),0);
-  transition:width .22s var(--ease),height .22s var(--ease),
-             margin .22s var(--ease),opacity .25s linear;
-  will-change:transform;
+  scale:var(--cur-scale,1);
+  transition:scale .22s var(--ease),opacity .25s linear;
+  will-change:transform,scale;
 }
-.cursor.is-hot{--cur:58px}          /* over something interactive */
-.cursor.is-down{--cur:20px}
+.cursor.is-hot{--cur-scale:2.23}    /* 26px reads as 58 over interactive things */
+.cursor.is-down{--cur-scale:.77}    /* 26px reads as 20 while pressed */
 .cursor.is-idle{opacity:0}
 
 /* Hiding the native pointer needs !important: psp.js writes cursor grab and
