@@ -17,7 +17,7 @@
 <div class="backdrop" aria-hidden="true"></div>
 
 <div id="boot" class="boot" role="status" aria-label="Loading">
-  <img src="assets/el/swag.png" alt="" class="boot__img" />
+  <img src="assets/el/naanchalant.svg" alt="" class="boot__img" />
   <div class="boot__bar"><span id="bootFill"></span></div>
   <div class="boot__pct" id="bootPct">000</div>
 </div>
@@ -83,17 +83,33 @@
      out here: the machine above and this rail are two views of one library,
      and hand-maintaining fourteen of them in two places guarantees they drift. -->
 <section class="sec sec--dark work-rail" id="projects" data-label="THE WORK">
-  <div class="work__pin">
+  <div class="work__inner">
     <div class="stage work__deco" aria-hidden="true">
       <img src="assets/el/floppy.svg" alt="" class="el el--floppy" />
       <img src="assets/el/umd.svg" alt="" class="el el--umd" />
     </div>
     <div class="work__head">
       <h2 class="mono-h" data-scramble>the work</h2>
-      <p class="work__sub">Everything I have shipped. Click a card to load it into the machine above, or open it directly.</p>
-      <div class="work__prog"><span id="workProg"></span></div>
+      <p class="work__sub">Everything I have shipped. Swipe, drag or use the arrows. Tap a card to load it into the machine above.</p>
     </div>
-    <div class="work__track" id="workTrack"></div>
+
+    <!-- A real scroll container, not a page-scroll-driven transform. That is
+         what gives native momentum and snapping on touch, and it means the
+         page scrolls straight past the section instead of forcing you
+         through all fourteen projects to reach what is below. -->
+    <div class="work__scroller" id="workScroller" tabindex="0"
+         role="region" aria-label="Projects, scroll horizontally">
+      <div class="work__track" id="workTrack"></div>
+    </div>
+
+    <div class="work__nav">
+      <button class="work__arrow" id="workPrev" type="button" aria-label="Previous project">&#8592;</button>
+      <div class="work__meter">
+        <span class="work__count"><b id="workIdx">01</b><i>/14</i></span>
+        <div class="work__prog"><span id="workProg"></span></div>
+      </div>
+      <button class="work__arrow" id="workNext" type="button" aria-label="Next project">&#8594;</button>
+    </div>
   </div>
 </section>
 

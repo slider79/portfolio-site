@@ -34,16 +34,21 @@
   --el-blend:screen;
 
   /* Halo behind any type that can end up over a cut-out. It is painted in
-     --paper, the tone that section is actually printed on, so it reads as a
-     soft glow of the background pushing back through the artwork. That makes
-     it automatically correct in both polarities: black behind white type on a
-     dark page, white behind black type once inverted, with nothing to keep in
-     sync. Three stacked blurs rather than one, because a single large blur is
-     too diffuse to lift text off a busy graphic. */
+     --paper, the tone that section is actually printed on, so it reads as the
+     background pushing back through the artwork. That makes it automatically
+     correct in both polarities: black behind white type on a dark page, white
+     behind black type once inverted, with nothing to keep in sync.
+
+     Five layers, not one. Stacked shadows of a single colour compound their
+     alpha, so the two tight ones build an almost solid knockout right at the
+     letterforms while the wide ones fade it out. A single large blur, or even
+     three, is too diffuse to lift small type off a bright passage. */
   --halo:
-    0 0 .22em var(--paper),
-    0 0 .5em  var(--paper),
-    0 0 1em   var(--paper);
+    0 0 .1em  var(--paper),
+    0 0 .1em  var(--paper),
+    0 0 .25em var(--paper),
+    0 0 .6em  var(--paper),
+    0 0 1.2em var(--paper);
 
   --f:'Helv','Helvetica Neue',Helvetica,Arial,sans-serif;
   --f-vcr:'VCR','Helv',monospace;
@@ -85,6 +90,23 @@ a{color:inherit;text-decoration:none}
 .backdrop{position:fixed;inset:0;z-index:-1;background:var(--dark)}
 .sec{position:relative;overflow:hidden}
 
+/* ---- section snapping ----------------------------------------------------
+   `proximity`, emphatically not `mandatory`. Proximity only pulls when the
+   scroll comes to rest near a boundary, so a slow scroll settles neatly onto
+   a section and a hard flick travels straight past it. Mandatory would do the
+   opposite: every gesture would be dragged to the nearest section and the
+   page would refuse to stop anywhere else, which on the tall history section
+   means never being able to read the middle of it.
+
+   Turned off entirely under reduced motion, where unrequested repositioning
+   is the whole thing being opted out of. */
+@media (prefers-reduced-motion:no-preference){
+  html{scroll-snap-type:y proximity}
+  .sec{scroll-snap-align:start}
+  /* never trap: a fast scroll may always skip a section outright */
+  .sec{scroll-snap-stop:normal}
+}
+
 /* ---- paper, and everything derived from it -------------------------------
    The cut-outs are dark artwork printed on an opaque white rectangle (star-a,
    star-b, dice, cards) or dark artwork on transparency (cd-a, cd-b, ic-mail).
@@ -122,7 +144,11 @@ body.is-invert .sec--dark {--el-blend:multiply;--el-inv:0}
 }
 body.is-invert .boot{--el-inv:1}
 .boot.is-done{opacity:0;visibility:hidden}
-.boot__img{width:min(230px,44vw);image-rendering:pixelated}
+/* The wordmark is a wide lockup (roughly 5.8:1), not the square mark this
+   replaced, so it needs a much larger width to reach a legible glyph size.
+   image-rendering is moot for an SVG of hard-edged rects but costs nothing
+   and keeps the rule correct if a bitmap is ever dropped back in. */
+.boot__img{width:min(560px,82vw);image-rendering:pixelated}
 .boot__bar{width:min(230px,44vw);height:2px;background:currentColor;opacity:.18;position:relative;overflow:hidden}
 .boot__bar span{position:absolute;inset:0 100% 0 0;background:var(--on-light);transition:right .16s linear}
 .boot__pct{font-family:var(--f-vcr);font-size:.95rem;letter-spacing:.14em;color:var(--on-light);opacity:.55}
@@ -192,13 +218,23 @@ body.is-invert .boot{--el-inv:1}
 .mono-sub,
 .machine__intro p,
 .work__sub,
+.work__count,
 .tl__i h3,
 .tl__org,
 .tl__i p,
 .lead p,
-.stack__g h3{
+.lead b,
+.stack__g h3,
+.stack__g li,
+.cue{
   text-shadow:var(--halo);
 }
+
+/* The timeline dates are generated content. text-shadow inherits, but only
+   from a rule that actually matches the parent, and the list above targets
+   .tl__i's children rather than .tl__i itself, so ::after was getting none
+   of it and the dates stayed the one unreadable thing over the terminal. */
+.tl__i::after{text-shadow:var(--halo)}
 
 /* tracking overlay, above the cut-outs, under the type, never interactive */
 .trk{
@@ -558,25 +594,25 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
 .gauge__tot{font-style:normal;font-size:.62rem;opacity:.45;margin-top:-.45rem}
 
 /* ============ 03 · THE WORK ============
-   A pinned horizontal rail. --pin-span is written by js/projects.js and is
-   exactly the distance the track has left to travel, so the section is only
-   ever as tall as the sideways scroll actually needs. Fallback of 0 means
-   that before JS measures, this behaves as one ordinary viewport. */
+   A real horizontal scroll container, on every breakpoint.
+
+   This used to be a page-scroll-driven transform inside a pinned section,
+   which had two problems. It made reading the rail compulsory: the section
+   was four thousand pixels tall, so reaching anything below meant scrolling
+   past all fourteen projects. And a transform cannot borrow the platform's
+   momentum or snapping, so touch felt dead.
+
+   An ordinary overflow-x container gets both for free, and the section is
+   one viewport tall again, so vertical scrolling passes straight through. */
 .work-rail{
-  --pin-span:0px;
-  height:calc(100svh + var(--pin-span));
+  min-height:100svh;
   position:relative;
-  /* clip, NOT hidden. `overflow:hidden` makes this a scroll container, and a
-     position:sticky child can only stick inside its nearest scrollport, so the
-     inherited .sec rule silently un-pinned the rail: the cards scrolled away
-     after one viewport and left three thousand pixels of empty section behind
-     them. `clip` still clips but creates no scrollport, so the pin works. */
-  overflow:clip;
+  display:flex;align-items:center;
+  overflow:clip;                     /* clip, not hidden: see .stage cut-outs */
 }
-.work__pin{
-  position:sticky;top:0;height:100svh;
-  display:flex;flex-direction:column;justify-content:center;
-  overflow:hidden;
+.work__inner{
+  position:relative;z-index:5;width:100%;
+  padding-block:clamp(3rem,8vh,5rem);
 }
 .work__deco{z-index:0}
 .el--floppy{left:-8%;top:8%;width:26%;opacity:.5}
@@ -588,26 +624,76 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
   margin-bottom:clamp(1.4rem,3.5vh,2.4rem);
 }
 .work__head .mono-h{margin-bottom:.25em}
-.work__sub{margin:0;font-size:clamp(.86rem,1.5vw,1rem);opacity:.55;max-width:46ch}
+.work__sub{margin:0;font-size:clamp(.86rem,1.5vw,1rem);opacity:.55;max-width:52ch}
+
+/* ---- the scroller ---- */
+.work__scroller{
+  position:relative;z-index:5;
+  overflow-x:auto;overflow-y:hidden;
+  /* Snap points are only honoured against the scrollport's own padding box,
+     so the inline padding lives here rather than on the track. Without the
+     matching scroll-padding, a centre-snapped card lands under the gutter. */
+  scroll-snap-type:x mandatory;
+  scroll-padding-inline:var(--gutter);
+  overscroll-behavior-x:contain;     /* no accidental back-navigation swipe */
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  cursor:grab;
+}
+.work__scroller::-webkit-scrollbar{display:none}
+.work__scroller.is-dragging{cursor:grabbing;scroll-snap-type:none}
+/* While a fast flick or a wheel burst is still in flight the snap is lifted,
+   then restored once it settles, so it glides and then locks on rather than
+   fighting every frame. js/projects.js toggles this. */
+.work__scroller.is-free{scroll-snap-type:none}
+.work__scroller:focus-visible{outline:2px solid currentColor;outline-offset:-2px}
+
+.work__track{
+  display:flex;align-items:stretch;
+  gap:clamp(1rem,2vw,1.75rem);
+  padding-inline:var(--gutter);
+  width:max-content;
+}
+
+/* ---- arrows and meter ---- */
+.work__nav{
+  position:relative;z-index:5;
+  margin-top:clamp(1.1rem,3vh,1.8rem);
+  padding-inline:var(--gutter);
+  display:flex;align-items:center;gap:clamp(.8rem,2vw,1.4rem);
+}
+.work__arrow{
+  flex:0 0 auto;
+  width:clamp(46px,7vw,54px);height:clamp(46px,7vw,54px);
+  display:grid;place-items:center;
+  background:none;color:inherit;cursor:pointer;
+  border:1px solid currentColor;border-color:color-mix(in srgb,currentColor 40%,transparent);
+  font-family:var(--f-vcr);font-size:1.15rem;line-height:1;
+  transition:background .3s,color .3s,border-color .3s,opacity .3s;
+}
+.work__arrow:hover:not(:disabled){background:currentColor;border-color:currentColor}
+.work__arrow:hover:not(:disabled){color:var(--paper)}
+.work__arrow:disabled{opacity:.22;cursor:default}
+.work__meter{flex:1;min-width:0;display:flex;align-items:center;gap:.9rem}
+.work__count{
+  font-family:var(--f-vcr);font-size:.86rem;letter-spacing:.1em;
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+.work__count b{font-weight:400}
+.work__count i{font-style:normal;opacity:.42}
 .work__prog{
-  margin-top:1.1rem;height:1px;background:currentColor;opacity:.18;
-  max-width:min(520px,60vw);
+  flex:1;min-width:0;height:1px;background:currentColor;opacity:.18;
 }
 .work__prog span{
   display:block;height:3px;margin-top:-1px;background:currentColor;
   transform-origin:left;transform:scaleX(0);
-}
-
-.work__track{
-  position:relative;z-index:5;
-  display:flex;align-items:stretch;gap:clamp(1rem,2vw,1.75rem);
-  padding-inline:var(--gutter);
-  will-change:transform;
+  transition:transform .18s linear;
 }
 
 .pcard{
   --accent:#22c55e;
   flex:0 0 clamp(270px,25vw,360px);
+  scroll-snap-align:center;
   display:flex;flex-direction:column;
   padding:clamp(1.1rem,2vw,1.6rem);
   border:1px solid color-mix(in srgb, var(--accent) 42%, transparent);
@@ -649,16 +735,13 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
 .pcard__state{font-family:var(--f-vcr);font-size:.62rem;letter-spacing:.2em;opacity:.32}
 .pcard.is-live .pcard__state{color:var(--accent);opacity:.72}
 
-/* Reduced motion turns the rail into an ordinary vertical list, a pinned
-   sideways scroll is precisely the effect that preference exists to disable. */
-.work-rail.is-static{height:auto}
-.work-rail.is-static .work__pin{position:static;height:auto;overflow:visible;
-  padding-block:clamp(4rem,10vh,7rem)}
-.work-rail.is-static .work__track{
-  flex-wrap:wrap;justify-content:center;transform:none;
-  max-width:1180px;margin-inline:auto;
+/* Reduced motion keeps the scroller, which is now a plain scroll container
+   rather than an effect, but drops the snapping and the smooth stepping,
+   which are animated repositioning the visitor did not ask for. */
+@media (prefers-reduced-motion:reduce){
+  .work__scroller{scroll-snap-type:none !important;scroll-behavior:auto}
+  .work__prog span{transition:none}
 }
-.work-rail.is-static .work__prog{display:none}
 
 /* ============ 04 · HISTORY ============ */
 .exp{position:relative}
@@ -733,13 +816,15 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
 /* ---- narrow ---- */
 @media (max-width:860px){
   .gauge{display:none}
-  .work-rail{height:auto}
-  .work__pin{position:static;height:auto;overflow:visible;
-    padding-block:clamp(3.5rem,9vh,6rem)}
-  .work__track{flex-direction:column;transform:none !important;
-    max-width:560px;margin-inline:auto}
-  .pcard{flex:1 1 auto}
-  .work__prog{display:none}
+
+  /* One card at a time, with both neighbours showing at the edges. The peek
+     is the whole point: a stack of cards that happens to overflow gives no
+     hint that it scrolls, whereas a sliver of the next card does. 78vw plus
+     the gutters leaves roughly 11vw visible each side. */
+  .pcard{flex:0 0 78vw}
+  .work__scroller{scroll-padding-inline:calc(50vw - 39vw)}
+  .work__track{padding-inline:calc(50vw - 39vw)}
+
   .machine__intro{margin-top:clamp(2rem,6vh,3rem)}
   .keys{display:none}
   .tl__i h3{padding-right:0}
