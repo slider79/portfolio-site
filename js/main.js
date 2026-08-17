@@ -558,6 +558,61 @@
   })();
 
   /* ---------------------------------------------------------- */
+  /* CURSOR                                                      */
+  /*                                                             */
+  /* A disc carrying the same rule as the small type: painted     */
+  /* white and composited with difference, so it is always the    */
+  /* exact inverse of whatever is beneath it and any text it      */
+  /* passes over flips inside it. All of that is CSS. This only   */
+  /* moves it, and decides when it should grow.                   */
+  /* ---------------------------------------------------------- */
+  (function () {
+    var dot = document.getElementById('cursor');
+    if (!dot) return;
+    /* Touch devices have no pointer to replace, and matchMedia is the honest
+       test: a `touchstart` listener would also fire on hybrid laptops. */
+    if (!window.matchMedia('(hover:hover) and (pointer:fine)').matches) {
+      dot.remove();
+      return;
+    }
+
+    var x = -200, y = -200, tx = -200, ty = -200, raf = null;
+    var HOT = 'a,button,summary,label,input,textarea,select,[data-mag],.pcard,#pspCanvas';
+
+    function place() {
+      raf = null;
+      /* A touch of easing so it trails rather than teleports. Kept small: past
+         about 0.35 the disc lags far enough behind a fast flick to stop
+         reading as the pointer. */
+      x += (tx - x) * (reduce ? 1 : 0.32);
+      y += (ty - y) * (reduce ? 1 : 0.32);
+      dot.style.setProperty('--cx', x.toFixed(1) + 'px');
+      dot.style.setProperty('--cy', y.toFixed(1) + 'px');
+      if (!reduce && (Math.abs(tx - x) > 0.4 || Math.abs(ty - y) > 0.4)) {
+        raf = requestAnimationFrame(place);
+      }
+    }
+    function queue() { if (!raf) raf = requestAnimationFrame(place); }
+
+    document.addEventListener('pointermove', function (e) {
+      if (e.pointerType === 'touch') return;
+      tx = e.clientX; ty = e.clientY;
+      dot.classList.remove('is-idle');
+      dot.classList.toggle('is-hot', !!(e.target.closest && e.target.closest(HOT)));
+      queue();
+    }, { passive: true });
+
+    document.addEventListener('pointerdown', function () { dot.classList.add('is-down'); }, { passive: true });
+    document.addEventListener('pointerup', function () { dot.classList.remove('is-down'); }, { passive: true });
+
+    /* Leaving the window entirely, rather than merely crossing an element */
+    document.addEventListener('pointerout', function (e) {
+      if (!e.relatedTarget && !e.toElement) dot.classList.add('is-idle');
+    }, { passive: true });
+    window.addEventListener('blur', function () { dot.classList.add('is-idle'); });
+  })();
+
+  /* ---------------------------------------------------------- */
   /* MAGNETIC LINKS                                              */
   /* ---------------------------------------------------------- */
   (function () {

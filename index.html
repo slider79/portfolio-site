@@ -16,6 +16,10 @@
 
 <div class="backdrop" aria-hidden="true"></div>
 
+<!-- Direct child of body on purpose: mix-blend-mode only sees the backdrop of
+     the stacking context it sits in, and at this level that is the whole page. -->
+<div class="cursor" id="cursor" aria-hidden="true"></div>
+
 <div id="boot" class="boot" role="status" aria-label="Loading">
   <img src="assets/el/naanchalant.svg" alt="" class="boot__img" />
   <div class="boot__bar"><span id="bootFill"></span></div>
@@ -54,10 +58,14 @@
     <img src="assets/el/flower.png" alt="" class="el el--flower" />
   </div>
 
+  <!-- The heading and the lede are siblings, not nested. .machine__intro has
+       to carry a z-index to paint above the stage and canvas, and a z-index
+       makes it a stacking context, which would cut the lede's difference blend
+       off from the artwork underneath. Two blocks, only one of them blended. -->
   <div class="machine__intro">
     <h2 class="mono-h" data-scramble>the library</h2>
-    <p>Fourteen cartridges. Everything I have built, loaded into the thing I grew up holding. Spin it, press the buttons, they all do something.</p>
   </div>
+  <p class="machine__lede">Fourteen cartridges. Everything I have built, loaded into the thing I grew up holding. Spin it, press the buttons, they all do something.</p>
 
   <div class="machine__stage">
     <canvas id="pspCanvas"></canvas>

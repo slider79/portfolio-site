@@ -215,21 +215,17 @@ body.is-invert .boot{--el-inv:1}
    polarity is a result of the blend, so a colour that already flips would
    cancel it out and the type would vanish into the paper.
 
-   Applied to the block, not to each heading and paragraph. An element only
-   blends with the backdrop of the stacking context it sits in, and a
-   `position:relative` carrying a `z-index` forms one, so blending the
-   individual children would blend them against their own empty wrapper
-   instead of against the artwork. Blending the wrapper composites the whole
-   block against everything painted below it, which is the cut-out. For the
-   same reason the wrappers below must not carry a z-index of their own. */
-.lay,
-.machine__intro,
-.work__head,
-.wrap,
-.cue{
-  color:#fff;
-  mix-blend-mode:difference;
-}
+   Small type only: body copy, labels, dates. Display type is deliberately
+   left alone, because inverting a 4cqw headline mid-letter reads as a
+   rendering fault rather than as an effect.
+
+   That means blending individual elements rather than their wrapper, so no
+   ancestor between one of these and the artwork may form a stacking context.
+   That is why .wrap and .work__head carry no z-index and no transform, and
+   why the machine's lede is a sibling of its heading rather than a child.
+
+   The full rule set lives at the end of this file, after the component rules,
+   so its opacity overrides win without needing !important. */
 
 /* tracking overlay, above the cut-outs, under the type, never interactive */
 .trk{
@@ -553,21 +549,20 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
 }
 
 /* ---- 02 machine, intro copy above the hardware ---- */
-/* Keeps its z-index, unlike .wrap and .work__head. The stage and the canvas
-   below it carry positive z-indexes, so without one this paints underneath
-   the machine. That is safe here only because the blend is on this element
-   rather than on its children: a stacking context on the blended element
-   itself is fine, it is an isolating ANCESTOR that would truncate the
-   backdrop. Blending the wrapper composites it against the flower and the
-   PSP canvas both. */
-.machine__intro{
+/* Both carry a z-index because the stage and the canvas below them carry
+   positive ones, and without it they paint underneath the machine. The lede
+   is a separate block precisely so that z-index does not sit between its
+   blend and the flower. */
+.machine__intro,
+.machine__lede{
   position:relative;z-index:6;
   width:min(640px, 100% - var(--gutter) * 2);
-  margin:clamp(3.4rem,9vh,5.6rem) auto 0;text-align:center;
+  margin-inline:auto;text-align:center;
 }
-.machine__intro p{
-  margin:.7em 0 0;font-size:clamp(.92rem,1.6vw,1.06rem);
-  line-height:1.55;opacity:.62;
+.machine__intro{margin-top:clamp(3.4rem,9vh,5.6rem)}
+.machine__lede{
+  margin-block:.7em 0;font-size:clamp(.92rem,1.6vw,1.06rem);
+  line-height:1.55;
 }
 .machine__intro .mono-h{margin-bottom:0}
 
@@ -642,6 +637,11 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
      matching scroll-padding, a centre-snapped card lands under the gutter. */
   scroll-snap-type:x mandatory;
   scroll-padding-inline:var(--gutter);
+  /* Vertical room for the selected card's lift. overflow-y is hidden so the
+     rail never grows a second scrollbar, which means anything rising above
+     the content box is simply cut off, and the raised card lost its top edge
+     and its border. */
+  padding-block:16px 8px;
   overscroll-behavior-x:contain;     /* no accidental back-navigation swipe */
   -webkit-overflow-scrolling:touch;
   scrollbar-width:none;
@@ -663,24 +663,42 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
 }
 
 /* ---- arrows and meter ---- */
+/* No z-index: it would form a stacking context and cut the arrows' difference
+   blend off from the UMD cut-out sitting right behind the forward one. Paint
+   order is carried by DOM order instead, since the deco stage is an earlier
+   sibling. */
 .work__nav{
-  position:relative;z-index:5;
+  position:relative;
   margin-top:clamp(1.1rem,3vh,1.8rem);
   padding-inline:var(--gutter);
   display:flex;align-items:center;gap:clamp(.8rem,2vw,1.4rem);
 }
+/* Difference-blended like the small type, for the same reason: the UMD
+   cut-out sits right behind the forward arrow, and a transparent outlined
+   button simply disappeared into it.
+
+   Resting state is a white glyph and border on nothing, so it reads white on
+   dark paper and black over light artwork. Hover fills the box white and
+   knocks the glyph out in black, which under difference inverts as a pair:
+   white box with black glyph on dark paper, black box with white glyph over
+   light artwork. Previously hover set the fill and the text to tones derived
+   from the same currentColor, so the glyph vanished into its own box. */
 .work__arrow{
   flex:0 0 auto;
-  width:clamp(46px,7vw,54px);height:clamp(46px,7vw,54px);
+  width:clamp(52px,8vw,68px);height:clamp(52px,8vw,68px);
   display:grid;place-items:center;
-  background:none;color:inherit;cursor:pointer;
-  border:1px solid currentColor;border-color:color-mix(in srgb,currentColor 40%,transparent);
-  font-family:var(--f-vcr);font-size:1.15rem;line-height:1;
-  transition:background .3s,color .3s,border-color .3s,opacity .3s;
+  background:transparent;cursor:pointer;
+  color:#fff;mix-blend-mode:difference;
+  border:2px solid #fff;
+  font-family:var(--f-vcr);font-size:clamp(1.25rem,2.2vw,1.6rem);line-height:1;
+  transition:background .25s var(--ease),color .25s var(--ease),scale .25s var(--ease);
 }
-.work__arrow:hover:not(:disabled){background:currentColor;border-color:currentColor}
-.work__arrow:hover:not(:disabled){color:var(--paper)}
-.work__arrow:disabled{opacity:.22;cursor:default}
+.work__arrow:hover:not(:disabled){background:#fff;color:#000;scale:1.06}
+.work__arrow:active:not(:disabled){scale:.96}
+/* .38 rather than .25: under difference a low alpha collapses toward mid grey
+   against both papers, and below about a third the disabled arrow stopped
+   being visible at all rather than merely reading as inert. */
+.work__arrow:disabled{opacity:.38;cursor:default}
 .work__meter{flex:1;min-width:0;display:flex;align-items:center;gap:.9rem}
 .work__count{
   font-family:var(--f-vcr);font-size:.86rem;letter-spacing:.1em;
@@ -704,16 +722,20 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
   display:flex;flex-direction:column;
   padding:clamp(1.1rem,2vw,1.6rem);
   border:1px solid color-mix(in srgb, var(--accent) 42%, transparent);
-  background:color-mix(in srgb, var(--accent) 7%, transparent);
+  /* Mixed against the paper rather than against transparency, so the card is
+     opaque. At 7% of the accent over nothing the cards were very nearly clear,
+     and the floppy and UMD cut-outs behind the two ends of the rail showed
+     straight through the first and last cards' copy. */
+  background:color-mix(in srgb, var(--accent) 12%, var(--paper));
   cursor:pointer;
   transform:skewY(var(--skew,0deg));
   transition:border-color .4s var(--ease),background .4s var(--ease),
              scale .5s var(--ease),translate .5s var(--ease);
 }
-.pcard:hover{background:color-mix(in srgb, var(--accent) 13%, transparent)}
+.pcard:hover{background:color-mix(in srgb, var(--accent) 18%, var(--paper))}
 .pcard.is-sel{
   border-color:var(--accent);
-  background:color-mix(in srgb, var(--accent) 17%, transparent);
+  background:color-mix(in srgb, var(--accent) 24%, var(--paper));
   translate:0 -8px;
 }
 
@@ -837,4 +859,101 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
   .tl__i h3{padding-right:0}
   .tl__i::after{position:static;display:block;margin-bottom:.35em}
   .el--floppy,.el--umd,.el--terminal{opacity:.3}
+}
+
+/* ============================================================
+   DIFFERENCE-BLENDED TYPE
+   Placed last on purpose: these rules override opacity set by the
+   component rules above, and coming later wins without !important.
+   ============================================================ */
+
+/* Small type only. Headings and display type are excluded deliberately:
+   inverting a 4cqw headline part-way through a letter reads as a rendering
+   fault, not as an effect. Body copy, labels and dates are where the overlap
+   actually hurts legibility, and where the flip reads as intentional.
+
+   Every one of these blends as its own element, so nothing between it and the
+   artwork may form a stacking context. See the notes on .wrap, .work__head
+   and .machine__lede. */
+.lay--role,
+.lay--bio,
+.lay--links,
+.machine__lede,
+.work__sub,
+.mono-sub,
+.tl__i h3,
+.tl__org,
+.tl__i p,
+.tl__i::after,
+.lead p,
+.stack__g h3,
+.stack__g li{
+  color:#fff;
+  mix-blend-mode:difference;
+
+  /* This is why the subtext could not simply stay grey.
+
+     Difference composites as mix(backdrop, |backdrop - source|, alpha), so a
+     half-opacity white lands near 128 over BOTH papers: mid grey on black and
+     mid grey on white, which is the one value that is unreadable against
+     everything. The old opacities here ran from .4 to .72, squarely in that
+     dead zone, and the dates at .4 were the worst of them.
+
+     At .88 the same maths gives about 224 over dark paper and about 31 over
+     light artwork. Both are high contrast, and the type still sits a step
+     below the headings. Hierarchy comes from size and letter-spacing now
+     rather than from being faded out. */
+  opacity:.88;
+}
+
+/* A row-level opacity would form a stacking context and cut its own children
+   off from the artwork, so finished roles are no longer dimmed as a block.
+   They are already distinguished by a hollow marker rather than a filled one. */
+.tl__i--past.is-in{opacity:1}
+.lay--where{opacity:.7}
+
+/* ============================================================
+   CURSOR
+   A disc that carries the same rule as the type: painted white and
+   composited with difference, so it is always the exact inverse of
+   whatever is under it, and any text it passes over flips inside it.
+   ============================================================ */
+.cursor{
+  position:fixed;left:0;top:0;
+  width:var(--cur,26px);height:var(--cur,26px);
+  margin-left:calc(var(--cur,26px) / -2);
+  margin-top:calc(var(--cur,26px) / -2);
+  border-radius:50%;
+  background:#fff;
+  mix-blend-mode:difference;
+  pointer-events:none;
+  z-index:9999;
+  /* parked off-screen until the first real pointer move */
+  transform:translate3d(var(--cx,-200px),var(--cy,-200px),0);
+  transition:width .22s var(--ease),height .22s var(--ease),
+             margin .22s var(--ease),opacity .25s linear;
+  will-change:transform;
+}
+.cursor.is-hot{--cur:58px}          /* over something interactive */
+.cursor.is-down{--cur:20px}
+.cursor.is-idle{opacity:0}
+
+/* Hiding the native pointer needs !important: psp.js writes cursor grab and
+   pointer straight onto the canvas as inline style, and inline beats a plain
+   rule. The disc grows over interactive things instead, which is the same
+   signal the pointer cursor was giving. */
+@media (hover:hover) and (pointer:fine){
+  body,body *{cursor:none !important}
+}
+/* No hover, no pointer to replace: touch keeps its own behaviour. */
+@media (hover:none),(pointer:coarse){
+  .cursor{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .cursor{transition:opacity .25s linear}
+}
+
+/* ---- desktop: heavier arrows ---- */
+@media (min-width:861px){
+  .work__arrow{border-width:3px;font-size:1.7rem}
 }
