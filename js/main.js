@@ -576,30 +576,20 @@
       return;
     }
 
-    var x = -200, y = -200, tx = -200, ty = -200, raf = null;
     var HOT = 'a,button,summary,label,input,textarea,select,[data-mag],.pcard,#pspCanvas';
 
-    function place() {
-      raf = null;
-      /* A touch of easing so it trails rather than teleports. Kept small: past
-         about 0.35 the disc lags far enough behind a fast flick to stop
-         reading as the pointer. */
-      x += (tx - x) * (reduce ? 1 : 0.32);
-      y += (ty - y) * (reduce ? 1 : 0.32);
-      dot.style.setProperty('--cx', x.toFixed(1) + 'px');
-      dot.style.setProperty('--cy', y.toFixed(1) + 'px');
-      if (!reduce && (Math.abs(tx - x) > 0.4 || Math.abs(ty - y) > 0.4)) {
-        raf = requestAnimationFrame(place);
-      }
-    }
-    function queue() { if (!raf) raf = requestAnimationFrame(place); }
+    /* Written straight from the event, with no interpolation and no rAF.
 
+       This used to ease toward the pointer at 0.32 a frame, which trails
+       behind the real cursor. On a site you navigate by pointing at things
+       that reads as lag, not as polish: the disc is standing in for the
+       system cursor, so anything less than exact tracking feels broken. */
     document.addEventListener('pointermove', function (e) {
       if (e.pointerType === 'touch') return;
-      tx = e.clientX; ty = e.clientY;
+      dot.style.setProperty('--cx', e.clientX + 'px');
+      dot.style.setProperty('--cy', e.clientY + 'px');
       dot.classList.remove('is-idle');
       dot.classList.toggle('is-hot', !!(e.target.closest && e.target.closest(HOT)));
-      queue();
     }, { passive: true });
 
     document.addEventListener('pointerdown', function () { dot.classList.add('is-down'); }, { passive: true });

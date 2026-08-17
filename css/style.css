@@ -938,9 +938,11 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
   pointer-events:none;
   z-index:9999;
   /* parked off-screen until the first real pointer move */
+  /* No transition on the transform, ever. The position must land on exactly
+     the pixel the pointer is on, on the frame the event arrives. */
   transform:translate3d(var(--cx,-200px),var(--cy,-200px),0);
   scale:var(--cur-scale,1);
-  transition:scale .22s var(--ease),opacity .25s linear;
+  transition:scale .13s var(--ease),opacity .2s linear;
   will-change:transform,scale;
 }
 .cursor.is-hot{--cur-scale:2.23}    /* 26px reads as 58 over interactive things */
