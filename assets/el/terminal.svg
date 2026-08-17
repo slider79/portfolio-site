@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="760" viewBox="0 0 860 760">
+<!-- A CRT terminal. Ink on paper for the same reason as the other two. -->
+<defs>
+  <pattern id="tht" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(20)">
+    <circle cx="3.5" cy="3.5" r="1.5" fill="#111"/>
+  </pattern>
+  <pattern id="scan" width="8" height="8" patternUnits="userSpaceOnUse">
+    <rect width="8" height="3.4" fill="#111" opacity=".5"/>
+  </pattern>
+</defs>
+
+<rect width="860" height="760" fill="#fff"/>
+
+<g transform="translate(430 380) rotate(-6) translate(-430 -380)">
+  <!-- housing -->
+  <path d="M136 128h588a26 26 0 0 1 26 26v370a26 26 0 0 1-26 26H136a26 26 0 0 1-26-26V154a26 26 0 0 1 26-26z"
+        fill="#fff" stroke="#111" stroke-width="10"/>
+  <path d="M136 128h588a26 26 0 0 1 26 26v370a26 26 0 0 1-26 26H136a26 26 0 0 1-26-26V154a26 26 0 0 1 26-26z"
+        fill="url(#tht)" opacity=".4"/>
+
+  <!-- glass, barrelled like the real thing -->
+  <path d="M186 190c92-16 396-16 488 0 14 60 14 232 0 292-92 16-396 16-488 0-14-60-14-232 0-292z"
+        fill="#fff" stroke="#111" stroke-width="9"/>
+  <path d="M186 190c92-16 396-16 488 0 14 60 14 232 0 292-92 16-396 16-488 0-14-60-14-232 0-292z"
+        fill="url(#scan)" opacity=".16"/>
+
+  <!-- the prompt -->
+  <g stroke="#111" stroke-width="9" stroke-linecap="round">
+    <path d="M230 246l34 26-34 26"/>
+    <path d="M286 298h122"/>
+  </g>
+  <g stroke="#111" stroke-width="8" stroke-linecap="round" opacity=".85">
+    <path d="M230 350h286M230 396h214M230 442h158"/>
+  </g>
+  <!-- block cursor -->
+  <rect x="536" y="430" width="30" height="26" fill="#111"/>
+
+  <!-- bezel furniture -->
+  <circle cx="176" cy="562" r="13" fill="#fff" stroke="#111" stroke-width="8"/>
+  <rect x="228" y="550" width="96" height="24" rx="12" fill="#fff" stroke="#111" stroke-width="8"/>
+  <g stroke="#111" stroke-width="7" opacity=".7">
+    <path d="M596 550h108M596 570h108"/>
+  </g>
+
+  <!-- stand -->
+  <path d="M352 550v56h156v-56" fill="#fff" stroke="#111" stroke-width="10"/>
+  <path d="M286 606h288a18 18 0 0 1 18 18v14a18 18 0 0 1-18 18H286a18 18 0 0 1-18-18v-14a18 18 0 0 1 18-18z"
+        fill="#fff" stroke="#111" stroke-width="10"/>
+</g>
+</svg>

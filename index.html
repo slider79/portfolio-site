@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Shuja Jamal, full-stack developer &amp; AI agent builder</title>
+<meta name="description" content="Muhammad Shuja Jamal is a software engineering student at FAST NUCES Lahore, AI intern at Spiral Labs. Full-stack developer building LLM agents, RAG systems and distributed networks." />
+<meta property="og:title" content="Shuja Jamal" />
+<meta property="og:description" content="Full-stack developer and AI agent builder. Fourteen projects, loaded like cartridges." />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#ffffff" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23fff'/%3E%3Ctext x='16' y='23' font-family='Helvetica,Arial' font-size='20' font-style='italic' text-anchor='middle' fill='%23000'%3Es%3C/text%3E%3C/svg%3E" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="is-booting">
+
+<div class="backdrop" aria-hidden="true"></div>
+
+<div id="boot" class="boot" role="status" aria-label="Loading">
+  <img src="assets/el/swag.png" alt="" class="boot__img" />
+  <div class="boot__bar"><span id="bootFill"></span></div>
+  <div class="boot__pct" id="bootPct">000</div>
+</div>
+
+<div class="ctl">
+  <button class="ctl__b" id="invertToggle" aria-pressed="false">invert</button>
+  <button class="ctl__b" id="soundToggle" aria-pressed="false" hidden>music on/off</button>
+</div>
+
+<!-- scroll progress, styled as the machine's own battery gauge -->
+<div class="gauge" aria-hidden="true">
+  <div class="gauge__cell"><span id="gaugeFill"></span></div>
+  <b class="gauge__num" id="secNum">01</b><i class="gauge__tot">/07</i>
+</div>
+
+<main id="top">
+
+<!-- ============ 01 · FRONT ============ -->
+<section class="sec sec--dark hero" id="hero" data-label="FRONT">
+  <div class="stage" data-rise>
+    <img src="assets/el/star-a.png" alt="" class="el el--star-a" aria-hidden="true" />
+    <img src="assets/el/star-b.png" alt="" class="el el--star-b" aria-hidden="true" />
+    <img src="assets/el/cards.png" alt="" class="el el--hero-cut" id="heroCut" aria-hidden="true" />
+    <h1 class="lay lay--shuja" data-scramble>shuja</h1>
+    <p class="lay lay--jamal" aria-hidden="true" data-scramble>jamal.</p>
+    <p class="lay lay--role" id="heroRole"><span id="roleText"></span><i class="caret"></i></p>
+  </div>
+  <a class="cue" href="#work" data-nav aria-label="Scroll to the projects"><i></i></a>
+</section>
+
+<!-- ============ 02 · THE MACHINE ============ -->
+<section class="sec sec--dark machine" id="work" data-label="LIBRARY">
+  <div class="stage" aria-hidden="true">
+    <img src="assets/el/flower.png" alt="" class="el el--flower" />
+  </div>
+
+  <div class="machine__intro">
+    <h2 class="mono-h" data-scramble>the library</h2>
+    <p>Fourteen cartridges. Everything I have built, loaded into the thing I grew up holding. Spin it, press the buttons, they all do something.</p>
+  </div>
+
+  <div class="machine__stage">
+    <canvas id="pspCanvas"></canvas>
+    <div class="machine__loading" id="pspLoading"><i class="spin" aria-hidden="true"></i></div>
+  </div>
+
+  <div class="rail" id="rail" aria-live="polite">
+    <b id="railIdx">01</b><i id="railTot">/14</i>
+    <span class="rail__name" id="railName">Vox</span>
+    <a class="rail__open" id="railOpen" href="#" target="_blank" rel="noopener" aria-label="Open this project">↗</a>
+  </div>
+
+  <div class="keys" aria-hidden="true">
+    <span><kbd>←</kbd><kbd>→</kbd> browse</span>
+    <span><kbd>✕</kbd> launch</span>
+    <span><kbd>○</kbd> source</span>
+    <span><kbd>△</kbd> read</span>
+  </div>
+</section>
+
+<!-- ============ 03 · THE WORK ============ -->
+<!-- Cards are generated from SJ_WORKS by js/projects.js rather than written
+     out here: the machine above and this rail are two views of one library,
+     and hand-maintaining fourteen of them in two places guarantees they drift. -->
+<section class="sec sec--dark work-rail" id="projects" data-label="THE WORK">
+  <div class="work__pin">
+    <div class="stage work__deco" aria-hidden="true">
+      <img src="assets/el/floppy.svg" alt="" class="el el--floppy" />
+      <img src="assets/el/umd.svg" alt="" class="el el--umd" />
+    </div>
+    <div class="work__head">
+      <h2 class="mono-h" data-scramble>the work</h2>
+      <p class="work__sub">Eleven of these are the Spiral Labs internship, in the order I built them. The rest are mine.</p>
+      <div class="work__prog"><span id="workProg"></span></div>
+    </div>
+    <div class="work__track" id="workTrack"></div>
+  </div>
+</section>
+
+<!-- ============ 04 · EXPERIENCE ============ -->
+<section class="sec sec--dark exp" id="experience" data-label="HISTORY">
+  <div class="stage exp__deco" aria-hidden="true">
+    <img src="assets/el/terminal.svg" alt="" class="el el--terminal" />
+  </div>
+
+  <div class="wrap">
+    <h2 class="mono-h" data-scramble>history</h2>
+
+    <ol class="tl" id="timeline">
+      <li class="tl__i" data-when="Jul 2026 to present">
+        <h3>Artificial Intelligence Intern</h3>
+        <p class="tl__org">Spiral Labs · NASTP, Lahore · Hybrid</p>
+        <p>Training models and building AI agents for real tasks. Eleven shipped briefs: voice agents, RAG systems, a CrewAI newsroom, and three written tool evaluations.</p>
+      </li>
+      <li class="tl__i" data-when="Jul 2026 to present">
+        <h3>IT &amp; Networking Intern</h3>
+        <p class="tl__org">NASTP Institute of Information Technology · Lahore · On-site</p>
+        <p>Hands-on with live network systems.</p>
+      </li>
+      <li class="tl__i" data-when="Jul 2026 to present">
+        <h3>Campus Ambassador</h3>
+        <p class="tl__org">SALT · Lahore</p>
+        <p>Representing SALT on campus: student outreach, on-ground activations, and running events with university societies.</p>
+      </li>
+      <li class="tl__i" data-when="May 2026 to present">
+        <h3>Junior Software Engineer</h3>
+        <p class="tl__org">Balochistan Special Development Initiative</p>
+        <p>Building the BSDI File Tracking System, a Django application that digitises government file routing between departments with role-based dispatch, forwarding and archival.</p>
+      </li>
+      <li class="tl__i tl__i--past" data-when="Jun to Jul 2026">
+        <h3>Cyber Security Intern</h3>
+        <p class="tl__org">Progree · Remote</p>
+        <p>Host and network vulnerability assessment with Nmap, Nessus and Nikto, packet analysis in Wireshark, plus a STRIDE threat model, a Zero-Trust access architecture and a four-stage incident response plan.</p>
+      </li>
+      <li class="tl__i tl__i--past" data-when="Jun to Jul 2025">
+        <h3>Full-Stack Developer</h3>
+        <p class="tl__org">BeWhoop · Remote</p>
+        <p>Web pages in Bootstrap and jQuery, then a standalone .NET ticketing system. Sprints run in Jira.</p>
+      </li>
+      <li class="tl__i tl__i--edu" data-when="Aug 2023 to Aug 2027">
+        <h3>BSc Software Engineering</h3>
+        <p class="tl__org">FAST NUCES, Lahore</p>
+        <p>Software Design &amp; Architecture, Database Systems, Design Patterns, Computer Networks, Operating Systems.</p>
+      </li>
+    </ol>
+
+    <div class="lead">
+      <h3 class="mono-sub">Also</h3>
+      <p><b>Head of Public Relations</b>, NUCES Fintech Society, 2025 to present. Key organiser of the NUCES Fintech Summit.</p>
+      <p><b>Web Development Officer</b>, SOFTEC, 2024 to 2025. Web operations for one of Pakistan's largest student-run software competitions.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 · STACK ============ -->
+<section class="sec sec--dark stack" id="stack" data-label="STACK">
+  <div class="wrap">
+    <h2 class="mono-h" data-scramble>stack</h2>
+    <div class="stack__grid" id="stackGrid">
+      <div class="stack__g">
+        <h3>Languages</h3>
+        <ul><li>C++</li><li>C</li><li>Python</li><li>JavaScript</li><li>TypeScript</li><li>SQL</li></ul>
+      </div>
+      <div class="stack__g">
+        <h3>Frameworks</h3>
+        <ul><li>React</li><li>Next.js</li><li>Node.js</li><li>Express</li><li>Django</li><li>.NET</li><li>Streamlit</li><li>Tailwind</li><li>Bootstrap</li><li>jQuery</li></ul>
+      </div>
+      <div class="stack__g">
+        <h3>AI &amp; LLM</h3>
+        <ul><li>Groq</li><li>Gemini</li><li>ElevenLabs</li><li>Mem0</li><li>CrewAI</li><li>Vapi</li><li>Chroma</li><li>Qdrant</li><li>Tool calling</li></ul>
+      </div>
+      <div class="stack__g">
+        <h3>Data</h3>
+        <ul><li>MongoDB</li><li>PostgreSQL</li><li>Supabase</li><li>SQLite</li></ul>
+      </div>
+      <div class="stack__g">
+        <h3>Networks &amp; Security</h3>
+        <ul><li>Distributed systems</li><li>P2P / gossip</li><li>WebSockets</li><li>TCP/IP</li><li>Wireshark</li><li>Nmap</li><li>Nessus</li></ul>
+      </div>
+      <div class="stack__g">
+        <h3>Ship it</h3>
+        <ul><li>Vercel</li><li>Render</li><li>Streamlit Cloud</li><li>Cloudflare</li><li>Git</li><li>Jira</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 06 · ABOUT ============ -->
+<section class="sec sec--dark about" id="about" data-label="ABOUT">
+  <div class="stage">
+    <img src="assets/el/cd-a.png" alt="" class="el el--cd-a" aria-hidden="true" />
+    <img src="assets/el/cd-b.png" alt="" class="el el--cd-b" aria-hidden="true" />
+    <h2 class="lay lay--abouth" data-scramble>About me</h2>
+    <div class="lay lay--bio">
+      <p>I'm Muhammad Shuja Jamal, a software engineering student at FAST NUCES Lahore, currently interning across AI, networking and security at once.</p>
+      <p>I build across the stack: React and Next.js on the front, Node and Django behind it, and increasingly Python where the interesting problems are. Lately that has meant AI agents that call tools, retrieval systems that stay honest about their sources, and a peer-to-peer network with no server in the middle of it. I like turning messy problems into clean, well-documented software, and I would rather test a tool myself than read what its landing page claims.</p>
+      <p>Off the keyboard: photography, running, and motorcycles.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 07 · CONTACT ============ -->
+<section class="sec sec--dark contact" id="contact" data-label="CONTACT">
+  <div class="stage">
+    <img src="assets/el/dice.png" alt="" class="el el--contact-cut" id="contactCut" aria-hidden="true" />
+    <h2 class="lay lay--contact" data-scramble>contact</h2>
+    <p class="lay lay--me" aria-hidden="true" data-scramble>me.</p>
+    <div class="lay lay--links">
+      <a href="mailto:sjshujaj@gmail.com" data-mag>sjshujaj@gmail.com</a>
+      <a href="https://github.com/slider79" target="_blank" rel="noopener" data-mag>github.com/slider79</a>
+      <a href="https://linkedin.com/in/shuja-j" target="_blank" rel="noopener" data-mag>linkedin.com/in/shuja-j</a>
+      <span class="lay--where">Lahore, Pakistan</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- Drop your own track here and the toggle un-hides itself. Nothing ships
+     with the site, so there is no audio to autoplay at anyone by default. -->
+<audio id="bgAudio" src="assets/audio/theme.mp3" loop preload="none" playsinline></audio>
+
+<script type="importmap">
+{ "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/"
+} }
+</script>
+<script src="js/data.js"></script>
+<script src="js/covers.js"></script>
+<script src="js/contours.js"></script>
+<script src="js/main.js"></script>
+<script src="js/projects.js"></script>
+<script src="js/track.js"></script>
+<script type="module" src="js/psp.js"></script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="760" viewBox="0 0 760 760">
+<!-- 3.5" floppy. Ink on paper, not an alpha cut-out: the white ground is
+     load-bearing, because CSS cuts these out with invert plus screen (see
+     the el-inv and el-blend custom properties in style.css). A transparent
+     background here would blend as a hole instead of as artwork.
+     Note for future edits: no double hyphens anywhere in this comment. XML
+     forbids them, and an SVG that fails to parse fails silently as a broken
+     image with no console error naming the cause. -->
+<defs>
+  <pattern id="ht" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(30)">
+    <circle cx="3.5" cy="3.5" r="1.5" fill="#111"/>
+  </pattern>
+  <pattern id="htf" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(30)">
+    <circle cx="3" cy="3" r="2.1" fill="#111"/>
+  </pattern>
+</defs>
+
+<rect width="760" height="760" fill="#fff"/>
+
+<g transform="translate(380 380) rotate(-11) translate(-380 -380)">
+  <!-- body -->
+  <rect x="152" y="150" width="456" height="452" rx="14" fill="#fff" stroke="#111" stroke-width="9"/>
+  <rect x="152" y="150" width="456" height="452" rx="14" fill="url(#ht)" opacity=".5"/>
+
+  <!-- shutter -->
+  <rect x="256" y="150" width="212" height="150" fill="#fff" stroke="#111" stroke-width="9"/>
+  <rect x="256" y="150" width="212" height="150" fill="url(#htf)" opacity=".85"/>
+  <rect x="286" y="168" width="96" height="118" fill="#fff" stroke="#111" stroke-width="8"/>
+  <!-- the metal's grain -->
+  <g stroke="#111" stroke-width="4" opacity=".55">
+    <path d="M410 172v106M428 172v106M446 172v106"/>
+  </g>
+
+  <!-- write-protect notch, punched out -->
+  <rect x="168" y="166" width="46" height="52" fill="#fff" stroke="#111" stroke-width="8"/>
+  <rect x="546" y="166" width="46" height="52" fill="#fff" stroke="#111" stroke-width="8"/>
+
+  <!-- label -->
+  <rect x="186" y="330" width="388" height="222" rx="6" fill="#fff" stroke="#111" stroke-width="9"/>
+  <g stroke="#111" stroke-width="7" stroke-linecap="round">
+    <path d="M214 384h330M214 424h330M214 464h236M214 504h158"/>
+  </g>
+  <!-- a hand-written line, because every real one had one -->
+  <path d="M232 358c26-13 52 12 78 0s52-13 78 0 52 12 78 0"
+        fill="none" stroke="#111" stroke-width="7" stroke-linecap="round" opacity=".8"/>
+
+  <!-- bevel -->
+  <path d="M152 590h456" stroke="#111" stroke-width="9" opacity=".35"/>
+</g>
+</svg>
