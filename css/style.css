@@ -127,11 +127,12 @@ body.is-invert .sec--dark {--el-blend:multiply;--el-inv:0}
 }
 body.is-invert .boot{--el-inv:1}
 .boot.is-done{opacity:0;visibility:hidden}
-/* The wordmark is a wide lockup (roughly 8:1), not the square mark this
-   replaced, so it needs a much larger width to reach a legible cell size.
-   image-rendering is moot for an SVG of hard-edged rects but costs nothing
-   and keeps the rule correct if a bitmap is ever dropped back in. */
-.boot__img{width:min(620px,88vw);image-rendering:pixelated}
+/* The wordmark is a wide lockup (roughly 5.8:1), not the square mark this
+   replaced, so it needs a much larger width to reach a legible glyph size.
+   Placeholder art: swap the file and re-check this width, since it is set
+   against that aspect ratio. image-rendering is moot for an SVG of hard-edged
+   rects but costs nothing if a bitmap is ever dropped back in. */
+.boot__img{width:min(560px,82vw);image-rendering:pixelated}
 .boot__bar{width:min(230px,44vw);height:2px;background:currentColor;opacity:.18;position:relative;overflow:hidden}
 .boot__bar span{position:absolute;inset:0 100% 0 0;background:var(--on-light);transition:right .16s linear}
 .boot__pct{font-family:var(--f-vcr);font-size:.95rem;letter-spacing:.14em;color:var(--on-light);opacity:.55}
