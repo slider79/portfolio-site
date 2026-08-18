@@ -90,15 +90,21 @@ is used twice and none goes unused.
 
 ## Music
 
-Off, and not even requested. Put a track you have the rights to at
-`assets/audio/theme.mp3` and flip the switch in `js/data.js`:
+A theme track ships at `assets/audio/theme1.mp3` and is enabled in
+`js/data.js`:
 
 ```js
 window.SJ_MUSIC = true;
 ```
 
-The toggle then appears in the corner, starts silent, and remembers the choice
-for the session.
+It is **off on arrival** and never autoplays. The toggle appears in the corner
+once the file's metadata has loaded, and the choice is remembered for the
+session. Turning it off fades out and pauses rather than cutting.
+
+`preload="metadata"` keeps this cheap: the browser fetches headers and a couple
+of seconds of audio, not the whole 4MB, so a visitor who never touches the
+toggle never pays for the track. To swap it, drop in a different file and update
+the path in both `js/data.js` (the comment) and `js/main.js` (`audio.src`).
 
 ---
 

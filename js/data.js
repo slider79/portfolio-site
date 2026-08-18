@@ -207,7 +207,7 @@ window.SJ_WORKS = [
 window.SJ_HERO_CUTOUT = 'cards';
 
 /* Background music. Put a track you have the rights to at
-   assets/audio/theme.mp3, flip this to true, and the toggle appears in the
+   assets/audio/theme1.mp3, flip this to true, and the toggle appears in the
    corner. It always starts silent and remembers the choice for the session.
    Left false, the file is never requested at all. */
-window.SJ_MUSIC = false;
+window.SJ_MUSIC = true;

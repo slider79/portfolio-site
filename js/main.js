@@ -203,7 +203,7 @@
   /* OFF by default now, and the toggle stays hidden until we know there is
      something to play. No track ships with the site, so the button would
      otherwise sit there promising audio that 404s. Drop a file at
-     assets/audio/theme.mp3 and it appears on its own. */
+     assets/audio/theme1.mp3 and it appears on its own. */
   var soundOnByDefault = false;
   try { if (sessionStorage.getItem('sj_sound') === '1') soundOnByDefault = true; } catch (e) {}
 
@@ -211,7 +211,7 @@
      to decide whether to show the toggle meant a 404 in the console on every
      single load, which is the first thing anyone inspecting the page sees. */
   if (audio && window.SJ_MUSIC) {
-    audio.src = 'assets/audio/theme.mp3';
+    audio.src = 'assets/audio/theme1.mp3';
     var revealed = false;
     var reveal = function () {
       if (revealed) return;
