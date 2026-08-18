@@ -45,6 +45,14 @@
    same element stays live instead of being frozen into the keyframes */
 @property --spin{syntax:'<angle>';inherits:false;initial-value:0deg}
 
+/* Registered so it can be transitioned. The cursor composes its position and
+   its size into one transform, and transitioning `transform` would ease the
+   translate too, which is the trailing lag that made the disc feel sticky.
+   Animating the scale VARIABLE instead lets the swell tween while the
+   position stays exact, because the transform is recomputed each frame from
+   an already-eased number. */
+@property --cur-scale{syntax:'<number>';inherits:false;initial-value:1}
+
 /* invert, every surface and every cut-out flips together */
 body.is-invert{
   --light:#000000;
@@ -192,41 +200,49 @@ body.is-invert .boot{--el-inv:1}
 .contact .stage{--fade-b:0}
 .lay{position:absolute;margin:0;z-index:5;line-height:1;letter-spacing:-.02em;font-weight:400;transform:translateY(var(--ty,0))}
 
-/* ---- type that can sit over artwork -------------------------------------
-   Difference blending, which is the same trick .ctl, .rail, .keys and .trk
-   already use, extended to the body type.
+/* ---- ink: a black chip behind small type -------------------------------
+   The cut-outs pass behind body copy at different places on every viewport,
+   and in inverted mode the artwork is dark ink on white paper, so dark type
+   crossing it disappears outright. This puts an opaque bed under the words.
 
-   |backdrop - source| computed per pixel. Painting the type pure white makes
-   that self-solving in every case:
+   Always black with white type, in BOTH polarities, which is what makes it
+   work: on dark paper the bed is invisible and you simply read white type,
+   and on light paper it reads as a marker stripe. One rule, no theming, and
+   the words are legible over any artwork either way.
 
-     white type over black paper   -> |0   - 255| = 255, stays white
-     white type over white artwork -> |255 - 255| = 0,   flips to black
-     inverted mode, white paper    -> |255 - 255| = 0,   reads as black type
-     inverted, over black artwork  -> |0   - 255| = 255, flips to white
+   `box-decoration-break:clone` is what keeps it off the "fat black box" the
+   brief warned against: the background is drawn per LINE rather than as one
+   rectangle around the whole paragraph, so it hugs the ragged edge of the
+   text and leaves the gaps between lines open. Padding is deliberately tiny,
+   a fraction of an em, so the bed is barely larger than the glyphs. */
+.ink{
+  background:#000;
+  color:#fff;
+  padding:.08em .34em .12em;
+  box-decoration-break:clone;
+  -webkit-box-decoration-break:clone;
+  /* the leading has to open up or consecutive lines' beds collide and the
+     per-line effect closes back into a solid block */
+  line-height:1.75;
+}
 
-   So only the overlapping pixels invert, the split follows the artwork
-   exactly, and it re-solves itself every frame as the cut-outs drift and
-   rotate underneath. Nothing is positional and nothing is hardcoded.
-
-   This replaces a text-shadow halo, which was the wrong mechanism: it lit a
-   soft box behind whole glyphs rather than inverting the overlap, and being
-   painted in --paper it only ever pushed one way.
-
-   The colour must be literal white, NOT var(--on-dark): under difference the
-   polarity is a result of the blend, so a colour that already flips would
-   cancel it out and the type would vanish into the paper.
-
-   Small type only: body copy, labels, dates. Display type is deliberately
-   left alone, because inverting a 4cqw headline mid-letter reads as a
-   rendering fault rather than as an effect.
-
-   That means blending individual elements rather than their wrapper, so no
-   ancestor between one of these and the artwork may form a stacking context.
-   That is why .wrap and .work__head carry no z-index and no transform, and
-   why the machine's lede is a sibling of its heading rather than a child.
-
-   The full rule set lives at the end of this file, after the component rules,
-   so its opacity overrides win without needing !important. */
+/* Single-line labels get the italic slant the brief asked for. The skew is on
+   a pseudo-element rather than on the box, so the bed leans while the type
+   inside stays upright: skewing the element itself would drag the letterforms
+   over with it. isolation keeps the z-index:-1 inside this element rather than
+   dropping the bed behind an ancestor's background. */
+.ink--slant{
+  position:relative;isolation:isolate;
+  display:inline-block;
+  background:none;color:#fff;
+  padding:.14em .5em .16em;
+  line-height:1.35;
+}
+.ink--slant::before{
+  content:'';position:absolute;inset:0;z-index:-1;
+  background:#000;
+  transform:skewX(-11deg);
+}
 
 /* tracking overlay, above the cut-outs, under the type, never interactive */
 .trk{
@@ -526,16 +542,12 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
    have no comp to honour and should reflow rather than scale, so
    they use an ordinary centred measure instead.
    ============================================================ */
-/* No z-index and no transform, both deliberate: either one would make this a
-   stacking context, and a blended element only sees the backdrop of the
-   context it lives in, so the type would stop inverting over the cut-out.
-   Paint order is instead carried by DOM order, since the deco stage is an
-   earlier sibling. The velocity skew moved to .pcard for the same reason. */
 .wrap{
-  position:relative;
+  position:relative;z-index:5;
   width:min(1180px, 100% - var(--gutter) * 2);
   margin-inline:auto;
   padding-block:clamp(5rem,12vh,9rem);
+  transform:skewY(var(--skew,0deg));
 }
 
 .mono-h{
@@ -550,20 +562,15 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
 }
 
 /* ---- 02 machine, intro copy above the hardware ---- */
-/* Both carry a z-index because the stage and the canvas below them carry
-   positive ones, and without it they paint underneath the machine. The lede
-   is a separate block precisely so that z-index does not sit between its
-   blend and the flower. */
-.machine__intro,
-.machine__lede{
+/* Keeps a z-index: the stage and canvas below carry positive ones, so without
+   it this paints underneath the machine. */
+.machine__intro{
   position:relative;z-index:6;
   width:min(640px, 100% - var(--gutter) * 2);
-  margin-inline:auto;text-align:center;
+  margin:clamp(3.4rem,9vh,5.6rem) auto 0;text-align:center;
 }
-.machine__intro{margin-top:clamp(3.4rem,9vh,5.6rem)}
-.machine__lede{
-  margin-block:.7em 0;font-size:clamp(.92rem,1.6vw,1.06rem);
-  line-height:1.55;
+.machine__intro p{
+  margin:.7em 0 0;font-size:clamp(.92rem,1.6vw,1.06rem);line-height:1.55;
 }
 .machine__intro .mono-h{margin-bottom:0}
 
@@ -612,7 +619,10 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
   display:flex;align-items:center;
   overflow:clip;                     /* clip, not hidden: see .stage cut-outs */
 }
-/* no z-index: see the blend note on .wrap */
+/* Deliberately no z-index. It would form a stacking context and cut the
+   arrows in .work__nav off from the UMD cut-out they blend against. Paint
+   order is carried by DOM order instead, the deco stage being an earlier
+   sibling. */
 .work__inner{
   position:relative;width:100%;
   padding-block:clamp(3rem,8vh,5rem);
@@ -622,7 +632,7 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
 .el--umd{left:78%;top:52%;width:24%;opacity:.5}
 
 .work__head{
-  position:relative;
+  position:relative;z-index:5;
   padding-inline:var(--gutter);
   margin-bottom:clamp(1.4rem,3.5vh,2.4rem);
 }
@@ -665,9 +675,8 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
 
 /* ---- arrows and meter ---- */
 /* No z-index: it would form a stacking context and cut the arrows' difference
-   blend off from the UMD cut-out sitting right behind the forward one. Paint
-   order is carried by DOM order instead, since the deco stage is an earlier
-   sibling. */
+   blend off from the UMD cut-out sitting right behind the forward one. The
+   arrows are one of the two places the blend was kept. */
 .work__nav{
   position:relative;
   margin-top:clamp(1.1rem,3vh,1.8rem);
@@ -801,18 +810,27 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
   border:1px solid currentColor;background:var(--paper,var(--dark));
 }
 .tl__i:not(.tl__i--past)::before{background:currentColor}
-.tl__i::after{
-  content:attr(data-when);
+/* A real element rather than generated content off a data attribute. A
+   pseudo-element cannot carry its own pseudo-element, and the slanted bed is
+   drawn with one, so the date had to become markup. It is also selectable
+   and readable now, which attr() content never was. */
+.tl__when{
   position:absolute;right:0;top:calc(clamp(1.1rem,2.4vh,1.7rem) + .1rem);
-  font-family:var(--f-vcr);font-size:.72rem;letter-spacing:.12em;opacity:.4;
+  font-family:var(--f-vcr);font-size:.72rem;letter-spacing:.12em;
   white-space:nowrap;
 }
 .tl__i h3{margin:0;font-size:clamp(1.05rem,2vw,1.35rem);font-weight:400;
   padding-right:11ch}
 .tl__org{margin:.25em 0 .5em;font-family:var(--f-vcr);font-size:.76rem;
-  letter-spacing:.1em;opacity:.5}
-.tl__i p:last-child{margin:0;font-size:.92rem;line-height:1.6;opacity:.72;
-  max-width:62ch}
+  letter-spacing:.1em}
+.tl__i p:last-child{margin:0;font-size:.92rem;max-width:62ch}
+
+/* Nothing carrying an ink bed is faded. Opacity multiplies the bed as well as
+   the words, so a half-opacity bed over light paper turns grey and takes the
+   contrast the bed exists to provide with it. Hierarchy here comes from size
+   and letter-spacing instead. */
+.tl__org,.tl__i p:last-child,.lead p,.work__sub,.machine__intro p,
+.lay--role,.mono-sub{opacity:1}
 /* Only finished roles are dimmed. The degree leads the timeline now, so it is
    current, not archive, and reads at full strength. */
 .tl__i--past{opacity:.001}
@@ -820,7 +838,7 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
 
 .lead{margin-top:clamp(2.4rem,6vh,4rem);padding-top:clamp(1.6rem,4vh,2.4rem);
   border-top:1px solid currentColor;border-color:color-mix(in srgb,currentColor 18%,transparent)}
-.lead p{margin:0 0 .5em;font-size:.92rem;line-height:1.6;opacity:.72;max-width:62ch}
+.lead p{margin:0 0 .5em;font-size:.92rem;max-width:62ch}
 .lead b{font-weight:400;opacity:1}
 
 /* ============ 05 · STACK ============ */
@@ -858,7 +876,7 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
   .machine__intro{margin-top:clamp(2rem,6vh,3rem)}
   .keys{display:none}
   .tl__i h3{padding-right:0}
-  .tl__i::after{position:static;display:block;margin-bottom:.35em}
+  .tl__when{position:static;display:inline-block;margin-bottom:.5em}
   .el--floppy,.el--umd,.el--terminal{opacity:.3}
 }
 
@@ -868,66 +886,27 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
    component rules above, and coming later wins without !important.
    ============================================================ */
 
-/* Small type only. Headings and display type are excluded deliberately:
-   inverting a 4cqw headline part-way through a letter reads as a rendering
-   fault, not as an effect. Body copy, labels and dates are where the overlap
-   actually hurts legibility, and where the flip reads as intentional.
-
-   Every one of these blends as its own element, so nothing between it and the
-   artwork may form a stacking context. See the notes on .wrap, .work__head
-   and .machine__lede. */
-.lay--role,
-.lay--bio,
-.lay--links,
-.machine__lede,
-.work__sub,
-.mono-sub,
-.tl__i h3,
-.tl__org,
-.tl__i p,
-.tl__i::after,
-.lead p,
-.stack__g h3,
-.stack__g li{
-  color:#fff;
-  mix-blend-mode:difference;
-
-  /* This is why the subtext could not simply stay grey.
-
-     Difference composites as mix(backdrop, |backdrop - source|, alpha), so a
-     half-opacity white lands near 128 over BOTH papers: mid grey on black and
-     mid grey on white, which is the one value that is unreadable against
-     everything. The old opacities here ran from .4 to .72, squarely in that
-     dead zone, and the dates at .4 were the worst of them.
-
-     At .88 the same maths gives about 224 over dark paper and about 31 over
-     light artwork. Both are high contrast, and the type still sits a step
-     below the headings. Hierarchy comes from size and letter-spacing now
-     rather than from being faded out. */
-  opacity:.88;
-}
-
-/* A row-level opacity would form a stacking context and cut its own children
-   off from the artwork, so finished roles are no longer dimmed as a block.
-   They are already distinguished by a hollow marker rather than a filled one. */
-.tl__i--past.is-in{opacity:1}
-.lay--where{opacity:.7}
-
 /* ============================================================
    CURSOR
    A disc that carries the same rule as the type: painted white and
    composited with difference, so it is always the exact inverse of
    whatever is under it, and any text it passes over flips inside it.
    ============================================================ */
-/* Fixed box, resized with `scale`, never with width/height/margin. Animating
-   the box would put a layout pass on the one element that moves on every
-   pointer event, and the negative margins that centre it on the pointer would
-   have to be animated in step. Scale is composited, and because the disc is
-   already centred it scales about the pointer for free.
+/* The scale lives INSIDE the transform, after the translate, and that is
+   load-bearing rather than stylistic.
 
-   `scale` is its own property rather than part of the transform: JS owns the
-   transform, writing only --cx and --cy, so growth stays purely declarative
-   and the two never have to be rewritten together. */
+   It used to be the standalone `scale` property. Individual transform
+   properties are applied in a fixed order, translate then rotate then scale
+   and only then the `transform` property, so `scale` was being applied BEFORE
+   the translate3d and therefore multiplied it. With the pointer at (1000,600)
+   the disc landed at (770,462) while a click held scale at .77, and at
+   (2230,1338) while it was grown over the machine: the two reported bugs,
+   the cursor jumping up and left on click and flying off to the right over
+   the PSP, were both this one line.
+
+   Composing them in a single transform keeps the translation at full size and
+   scales about the pointer, because the negative margins already centre the
+   disc on it. */
 .cursor{
   position:fixed;left:0;top:0;
   width:26px;height:26px;
@@ -937,16 +916,15 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
   mix-blend-mode:difference;
   pointer-events:none;
   z-index:9999;
-  /* parked off-screen until the first real pointer move */
-  /* No transition on the transform, ever. The position must land on exactly
-     the pixel the pointer is on, on the frame the event arrives. */
-  transform:translate3d(var(--cx,-200px),var(--cy,-200px),0);
-  scale:var(--cur-scale,1);
-  transition:scale .13s var(--ease),opacity .2s linear;
-  will-change:transform,scale;
+  /* parked off-screen until the first real pointer move. No transition on the
+     transform, ever: the position must land on exactly the pixel the pointer
+     is on, on the frame the event arrives. */
+  transform:translate3d(var(--cx,-200px),var(--cy,-200px),0) scale(var(--cur-scale,1));
+  /* The scale variable is eased, never the transform itself. See the
+     @property note above. */
+  transition:--cur-scale .18s var(--ease),opacity .2s linear;
 }
-.cursor.is-hot{--cur-scale:2.23}    /* 26px reads as 58 over interactive things */
-.cursor.is-down{--cur-scale:.77}    /* 26px reads as 20 while pressed */
+.cursor.is-hot{--cur-scale:1.45}   /* a slight swell over cards and links */
 .cursor.is-idle{opacity:0}
 
 /* Hiding the native pointer needs !important: psp.js writes cursor grab and

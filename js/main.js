@@ -560,11 +560,11 @@
   /* ---------------------------------------------------------- */
   /* CURSOR                                                      */
   /*                                                             */
-  /* A disc carrying the same rule as the small type: painted     */
-  /* white and composited with difference, so it is always the    */
-  /* exact inverse of whatever is beneath it and any text it      */
-  /* passes over flips inside it. All of that is CSS. This only   */
-  /* moves it, and decides when it should grow.                   */
+  /* A disc painted white and composited with difference, so it   */
+  /* is always the exact inverse of whatever sits beneath it.     */
+  /* All of that is CSS. This only moves it, and decides when it  */
+  /* should swell. It swells over things you can click and does   */
+  /* nothing else: no press state, no trailing, no magnetism.     */
   /* ---------------------------------------------------------- */
   (function () {
     var dot = document.getElementById('cursor');
@@ -576,7 +576,12 @@
       return;
     }
 
-    var HOT = 'a,button,summary,label,input,textarea,select,[data-mag],.pcard,#pspCanvas';
+    /* #pspCanvas is deliberately absent. The machine has its own cursor
+       language, grab and pointer written straight onto the canvas by psp.js,
+       and swelling the disc across the whole of it said nothing useful. The
+       swell is reserved for discrete things you can click: cards, links,
+       buttons, fields. */
+    var HOT = 'a,button,summary,label,input,textarea,select,[data-mag],.pcard';
 
     /* Written straight from the event, with no interpolation and no rAF.
 
@@ -591,9 +596,6 @@
       dot.classList.remove('is-idle');
       dot.classList.toggle('is-hot', !!(e.target.closest && e.target.closest(HOT)));
     }, { passive: true });
-
-    document.addEventListener('pointerdown', function () { dot.classList.add('is-down'); }, { passive: true });
-    document.addEventListener('pointerup', function () { dot.classList.remove('is-down'); }, { passive: true });
 
     /* Leaving the window entirely, rather than merely crossing an element */
     document.addEventListener('pointerout', function (e) {

@@ -47,7 +47,7 @@
     <img src="assets/el/cards.png" alt="" class="el el--hero-cut" id="heroCut" aria-hidden="true" />
     <h1 class="lay lay--shuja" data-scramble>shuja</h1>
     <p class="lay lay--jamal" aria-hidden="true" data-scramble>jamal.</p>
-    <p class="lay lay--role" id="heroRole"><span id="roleText"></span><i class="caret"></i></p>
+    <p class="lay lay--role" id="heroRole"><span class="ink"><span id="roleText"></span><i class="caret"></i></span></p>
   </div>
   <a class="cue" href="#work" data-nav aria-label="Scroll to the projects"><i></i></a>
 </section>
@@ -58,14 +58,10 @@
     <img src="assets/el/flower.png" alt="" class="el el--flower" />
   </div>
 
-  <!-- The heading and the lede are siblings, not nested. .machine__intro has
-       to carry a z-index to paint above the stage and canvas, and a z-index
-       makes it a stacking context, which would cut the lede's difference blend
-       off from the artwork underneath. Two blocks, only one of them blended. -->
   <div class="machine__intro">
     <h2 class="mono-h" data-scramble>the library</h2>
+    <p><span class="ink">Fourteen cartridges. Everything I have built, loaded into the thing I grew up holding. Spin it, press the buttons, they all do something.</span></p>
   </div>
-  <p class="machine__lede">Fourteen cartridges. Everything I have built, loaded into the thing I grew up holding. Spin it, press the buttons, they all do something.</p>
 
   <div class="machine__stage">
     <canvas id="pspCanvas"></canvas>
@@ -98,7 +94,7 @@
     </div>
     <div class="work__head">
       <h2 class="mono-h" data-scramble>the work</h2>
-      <p class="work__sub">Everything I have shipped. Swipe, drag or use the arrows. Tap a card to load it into the machine above.</p>
+      <p class="work__sub"><span class="ink">Everything I have shipped. Swipe, drag or use the arrows. Tap a card to load it into the machine above.</span></p>
     </div>
 
     <!-- A real scroll container, not a page-scroll-driven transform. That is
@@ -131,47 +127,54 @@
     <h2 class="mono-h" data-scramble>history</h2>
 
     <ol class="tl" id="timeline">
-      <li class="tl__i tl__i--edu" data-when="Aug 2023 to Aug 2027">
+      <li class="tl__i tl__i--edu">
+        <span class="tl__when ink--slant">Aug 2023 to Aug 2027</span>
         <h3>BSc Software Engineering</h3>
-        <p class="tl__org">FAST NUCES, Lahore</p>
-        <p>Software Design &amp; Architecture, Database Systems, Design Patterns, Computer Networks, Operating Systems.</p>
+        <p class="tl__org"><span class="ink--slant">FAST NUCES, Lahore</span></p>
+        <p><span class="ink">Software Design &amp; Architecture, Database Systems, Design Patterns, Computer Networks, Operating Systems.</span></p>
       </li>
-      <li class="tl__i" data-when="Jul 2026 to present">
+      <li class="tl__i">
+        <span class="tl__when ink--slant">Jul 2026 to present</span>
         <h3>Artificial Intelligence Intern</h3>
-        <p class="tl__org">Spiral Labs · NASTP, Lahore · Hybrid</p>
-        <p>Training models and building AI agents for real tasks. Eleven shipped briefs: voice agents, RAG systems, a CrewAI newsroom, and three written tool evaluations.</p>
+        <p class="tl__org"><span class="ink--slant">Spiral Labs · NASTP, Lahore · Hybrid</span></p>
+        <p><span class="ink">Training models and building AI agents for real tasks. Eleven shipped briefs: voice agents, RAG systems, a CrewAI newsroom, and three written tool evaluations.</span></p>
       </li>
-      <li class="tl__i" data-when="Jul 2026 to present">
+      <li class="tl__i">
+        <span class="tl__when ink--slant">Jul 2026 to present</span>
         <h3>IT &amp; Networking Intern</h3>
-        <p class="tl__org">NASTP Institute of Information Technology · Lahore · On-site</p>
-        <p>Hands-on with live network systems.</p>
+        <p class="tl__org"><span class="ink--slant">NASTP Institute of Information Technology · Lahore · On-site</span></p>
+        <p><span class="ink">Hands-on with live network systems.</span></p>
       </li>
-      <li class="tl__i" data-when="Jul 2026 to present">
+      <li class="tl__i">
+        <span class="tl__when ink--slant">Jul 2026 to present</span>
         <h3>Campus Ambassador</h3>
-        <p class="tl__org">SALT · Lahore</p>
-        <p>Representing SALT on campus: student outreach, on-ground activations, and running events with university societies.</p>
+        <p class="tl__org"><span class="ink--slant">SALT · Lahore</span></p>
+        <p><span class="ink">Representing SALT on campus: student outreach, on-ground activations, and running events with university societies.</span></p>
       </li>
-      <li class="tl__i" data-when="May 2026 to present">
+      <li class="tl__i">
+        <span class="tl__when ink--slant">May 2026 to present</span>
         <h3>Junior Software Engineer</h3>
-        <p class="tl__org">Balochistan Special Development Initiative</p>
-        <p>Building the BSDI File Tracking System, a Django application that digitises government file routing between departments with role-based dispatch, forwarding and archival.</p>
+        <p class="tl__org"><span class="ink--slant">Balochistan Special Development Initiative</span></p>
+        <p><span class="ink">Building the BSDI File Tracking System, a Django application that digitises government file routing between departments with role-based dispatch, forwarding and archival.</span></p>
       </li>
-      <li class="tl__i tl__i--past" data-when="Jun to Jul 2026">
+      <li class="tl__i tl__i--past">
+        <span class="tl__when ink--slant">Jun to Jul 2026</span>
         <h3>Cyber Security Intern</h3>
-        <p class="tl__org">Progree · Remote</p>
-        <p>Host and network vulnerability assessment with Nmap, Nessus and Nikto, packet analysis in Wireshark, plus a STRIDE threat model, a Zero-Trust access architecture and a four-stage incident response plan.</p>
+        <p class="tl__org"><span class="ink--slant">Progree · Remote</span></p>
+        <p><span class="ink">Host and network vulnerability assessment with Nmap, Nessus and Nikto, packet analysis in Wireshark, plus a STRIDE threat model, a Zero-Trust access architecture and a four-stage incident response plan.</span></p>
       </li>
-      <li class="tl__i tl__i--past" data-when="Jun to Jul 2025">
+      <li class="tl__i tl__i--past">
+        <span class="tl__when ink--slant">Jun to Jul 2025</span>
         <h3>Full-Stack Developer</h3>
-        <p class="tl__org">BeWhoop · Remote</p>
-        <p>Web pages in Bootstrap and jQuery, then a standalone .NET ticketing system. Sprints run in Jira.</p>
+        <p class="tl__org"><span class="ink--slant">BeWhoop · Remote</span></p>
+        <p><span class="ink">Web pages in Bootstrap and jQuery, then a standalone .NET ticketing system. Sprints run in Jira.</span></p>
       </li>
     </ol>
 
     <div class="lead">
-      <h3 class="mono-sub">Also</h3>
-      <p><b>Head of Public Relations</b>, NUCES Fintech Society, 2025 to present. Key organiser of the NUCES Fintech Summit.</p>
-      <p><b>Web Development Officer</b>, SOFTEC, 2024 to 2025. Web operations for one of Pakistan's largest student-run software competitions.</p>
+      <h3 class="mono-sub"><span class="ink--slant">Also</span></h3>
+      <p><span class="ink"><b>Head of Public Relations</b>, NUCES Fintech Society, 2025 to present. Key organiser of the NUCES Fintech Summit.</span></p>
+      <p><span class="ink"><b>Web Development Officer</b>, SOFTEC, 2024 to 2025. Web operations for one of Pakistan's largest student-run software competitions.</span></p>
     </div>
   </div>
 </section>
