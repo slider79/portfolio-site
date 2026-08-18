@@ -182,9 +182,26 @@ body.is-invert .boot{--el-inv:1}
   width:max(100vw, calc(100svh * 16 / 9));
   height:max(100svh, calc(100vw * 9 / 16));
   container-type:size;
-  background:var(--paper);
   --vtop:calc(50% - 50svh);
   --vbot:calc(50% + 50svh);
+}
+
+/* The paper and the cut-outs, and ONLY those, carry the seam fade.
+
+   The mask used to sit on .stage itself, which meant it faded everything the
+   stage contained, the type included. The about copy is positioned in percent
+   and sized in cqw while the fade band is measured in svh, so on a short wide
+   viewport the last line or two of the bio landed inside the band and dissolved:
+   at 1280x720 it finished 25px into it.
+
+   Splitting the layer fixes that without giving anything up. The artwork still
+   needs the fade, measured, seven cut-outs cross a band and two by more than
+   200px, so hard-cutting them at the section edge would be worse than the bug.
+   Type is now a sibling of this layer rather than a child of it, so it is never
+   masked at all and always reads in full. */
+.stage__art{
+  position:absolute;inset:0;z-index:0;
+  background:var(--paper);
   -webkit-mask-image:linear-gradient(to bottom,
       transparent var(--vtop),
       #000 calc(var(--vtop) + var(--fade-t)),
@@ -372,7 +389,17 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
 .lay--abouth{left:50%;top:26%;transform:translate(-50%,var(--ty,0));font-family:var(--f-vcr);font-size:3.3cqw;letter-spacing:.06em}
 .lay--bio{
   left:50%;top:38%;width:44%;margin-left:-22%;
-  font-size:1.78cqw;line-height:1.3;letter-spacing:0;
+  /* Clamped against the viewport HEIGHT as well as the stage width.
+
+     cqw alone sizes this from the stage's width, but the room it has to fill
+     is the section's height, which is 100svh. On anything wider than 16:9 the
+     two pull apart: at 1680x620 the copy rendered at 30px and ran 130px past
+     the section, where overflow:hidden simply cut the last lines off. The svh
+     term only bites once the window is too short for the width-derived size,
+     so at 16:9 and taller nothing changes. The floor stops a very short
+     landscape window shrinking it into unreadability. */
+  font-size:max(13px, min(1.78cqw, 2.9svh));
+  line-height:1.3;letter-spacing:0;
   text-align:justify;text-justify:inter-word;hyphens:auto;
 }
 .lay--bio p{margin:0}
@@ -472,7 +499,14 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
      width by the desktop's height, squashed into a completely wrong aspect. */
   .el{height:auto}
 
-  /* Every value below is percent of the stage, or cqw, one system.
+  /* Every display size below is min(Ncqw, Msvh). cqw alone sizes type from
+     the stage's width, which is fine in portrait and wrong in landscape: an
+     812x375 phone still matches this breakpoint, and 11cqw there is 89px of
+     name in a 375px-tall window. Each svh cap is set above the value the
+     portrait case already produces, so portrait is untouched and the cap only
+     engages when the window is too short for its width.
+
+     Every value below is percent of the stage, or cqw, one system.
      `cqw` and not `vw`: if the stage ever stops being exactly the viewport,
      the type still scales with the composition instead of drifting out of it. */
 
@@ -501,15 +535,18 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
   .el--hero-cut[data-cut="cards"]{width:auto;height:34cqh;left:calc(50cqw - 12.87cqh);top:16cqh}
   /* .13em each side, so the two halves read as "shuja jamal." and not as one
      run-together word the way "shutter"+"kif." was meant to */
-  .lay--shuja,.lay--jamal{top:57cqh;font-size:11cqw;white-space:nowrap}
+  .lay--shuja,.lay--jamal{top:57cqh;font-size:min(11cqw,13svh);white-space:nowrap}
   .lay--shuja{left:auto;right:calc(50% + .13em);text-align:right}
   .lay--jamal{left:calc(50% + .13em);right:auto;text-align:left}
-  .lay--role{top:68cqh;font-size:2.9cqw;letter-spacing:.12em;white-space:normal;
+  .lay--role{top:68cqh;font-size:min(2.9cqw,3.4svh);letter-spacing:.12em;white-space:normal;
     width:86%;left:7%;transform:translateY(var(--ty,0));text-align:center}
 
   /* 03 about */
-  .lay--abouth{left:50%;top:14%;transform:translate(-50%,var(--ty,0));font-size:7.5cqw}
-  .lay--bio{left:7%;top:24%;width:86%;margin-left:0;font-size:4.4cqw;text-align:left}
+  .lay--abouth{left:50%;top:14%;transform:translate(-50%,var(--ty,0));font-size:min(7.5cqw,8svh)}
+  /* same width-versus-height clamp as the desktop rule: a landscape phone is
+     still under this breakpoint but has barely any height to give */
+  .lay--bio{left:7%;top:24%;width:86%;margin-left:0;text-align:left;
+    font-size:max(12px, min(4.4cqw, 2.55svh))}
   .el--cd-a{left:-18%;top:-2%;width:62%;height:auto}
   .el--cd-b{left:58%;top:74%;width:54%;height:auto}
 
@@ -523,14 +560,14 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
   .el--contact-cut[data-cut="dice"]{width:auto;height:34cqh;left:calc(50cqw - 17cqh);top:25cqh}
   .lay--contact,.lay--me{
     left:0;right:0;width:100%;text-align:center;
-    font-size:12cqw;white-space:nowrap;
+    font-size:min(12cqw,13svh);white-space:nowrap;
   }
   .lay--contact{top:12cqh}
   .lay--me     {top:66cqh}
   /* centred by the flex box itself, not by a left offset that only happens to
      look centred at one particular width */
   .lay--links{left:0;width:100%;top:78cqh;transform:translateY(var(--ty,0));
-    font-size:3.5cqw;gap:1.4cqh}
+    font-size:min(3.5cqw,3.6svh);gap:1.4cqh}
 
   /* 02 work, behind the machine, aspect preserved, centred in container units
      so it stays centred at any phone aspect. Source is 1248x1152, so
@@ -546,6 +583,33 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
   /* The scroll parallax moves seven elements per frame on a device that is
      already spending its budget on the machine. */
   .el,.lay{--ty:0 !important}
+}
+
+/* ---- short landscape ---------------------------------------------------
+   A phone on its side is still under the narrow breakpoint but has barely a
+   third of the height the portrait composition was laid out for. Measured at
+   812x375: the role line started 2cqh above where the name ended, and the
+   contact links ran 7cqh past the bottom of their section.
+
+   The percentages here are the same system as the portrait block, just
+   re-pitched for the height available. Gated on max-height as well as
+   orientation so a tablet in landscape, which has room, keeps the normal
+   composition. */
+@media (max-width:860px) and (orientation:landscape) and (max-height:520px){
+  .lay--shuja,.lay--jamal{top:46cqh}
+  .lay--role{top:64cqh}
+  .el--hero-cut{height:26cqh;top:8cqh}
+  .el--hero-cut[data-cut="cards"]{height:28cqh;left:calc(50cqw - 10.6cqh);top:6cqh}
+
+  .lay--abouth{top:7%}
+  .lay--bio{top:24%}
+
+  .lay--contact{top:5cqh}
+  .lay--me{top:33cqh}
+  .lay--links{top:52cqh;gap:.4cqh}
+  .lay--links a{padding:.3em .35em}
+  .el--contact-cut{height:26cqh;top:6cqh;left:calc(50cqw - 13cqh)}
+  .el--contact-cut[data-cut="dice"]{height:24cqh;left:calc(50cqw - 12cqh);top:8cqh}
 }
 
 /* ============ REDUCED MOTION ============ */
