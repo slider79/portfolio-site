@@ -154,7 +154,9 @@ body.is-invert .boot{--el-inv:1}
 }
 .is-lit .ctl{opacity:1}
 .ctl__b{
-  background:none;border:0;padding:.18rem 0;cursor:pointer;
+  /* .18rem gave a 21px tall target. Padding is the only dimension free to
+     grow here without moving the label. */
+  background:none;border:0;padding:.5rem 0;cursor:pointer;
   font-family:var(--f);font-size:clamp(.72rem,1vw,.86rem);color:#fff;
   line-height:1.35;position:relative;
 }
@@ -244,6 +246,28 @@ body.is-invert .boot{--el-inv:1}
   transform:skewX(-11deg);
 }
 
+/* ---- hyper text -------------------------------------------------------
+   One inline-block per character, which is what makes the effect safe to
+   run on a heading: the box is laid out once from the real text, so the
+   letter storm swapping glyphs underneath can never reflow or resize it.
+   VCR is monospaced, so every substitute occupies the same cell.
+
+   The fade matches the initial/animate pair the React original passed to
+   framer-motion. Delay is set per span in JS so the stagger follows the
+   reading direction. */
+.ht{
+  display:inline-block;
+  opacity:0;
+  translate:0 -.28em;
+  transition:opacity .26s var(--ease),translate .26s var(--ease);
+}
+.ht.is-in{opacity:1;translate:0 0}
+.ht--sp{width:.34em}
+/* Never leave a heading invisible if the script fails to load or throws
+   before it can add is-in. Without this the markup would render as a row of
+   transparent spans, which is the failure the effect must not have. */
+.no-js .ht,html:not(.js) .ht{opacity:1;translate:0 0}
+
 /* tracking overlay, above the cut-outs, under the type, never interactive */
 .trk{
   position:absolute;inset:0;width:100%;height:100%;z-index:3;
@@ -283,7 +307,8 @@ body.is-invert .boot{--el-inv:1}
   vertical-align:-.12em;margin-left:.18em;animation:blink 1.05s steps(2) infinite}
 @keyframes blink{50%{opacity:0}}
 
-.cue{position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:6;padding:.6rem}
+.cue{position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:6;
+  padding:.6rem 1.1rem}
 .cue i{display:block;width:1px;height:34px;background:currentColor;opacity:.3;position:relative;overflow:hidden}
 .cue i::after{content:'';position:absolute;inset:0;background:currentColor;animation:sd 2s cubic-bezier(.65,0,.35,1) infinite}
 @keyframes sd{0%{transform:translateY(-100%)}60%,100%{transform:translateY(100%)}}
@@ -376,7 +401,8 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
   font-family:var(--f-vcr);font-size:1.28cqw;letter-spacing:.08em;text-align:center;
 }
 .lay--links a{
-  position:relative;padding:.15em .1em;
+  /* .15em block padding left these at 17px tall, under the 24px minimum */
+  position:relative;padding:.5em .35em;
   transform:translate(var(--mx,0),var(--my,0));
   transition:transform .45s var(--ease),opacity .3s;
 }
@@ -727,6 +753,13 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
 
 .pcard{
   --accent:#22c55e;
+  /* The accent pushed toward whatever the current ink colour is. On black
+     paper --on-dark is white so the accent lightens, on white paper it is
+     black so the accent darkens. Either way small accent text keeps its hue
+     and gains the contrast it needs: the raw accent measured 3.43:1 on dark
+     and as low as 2.05:1 on light at 10 and 11px, both under the 4.5 a
+     body-size string needs. */
+  --accent-ink:color-mix(in srgb, var(--accent) 58%, var(--on-dark));
   flex:0 0 clamp(270px,25vw,360px);
   scroll-snap-align:center;
   display:flex;flex-direction:column;
@@ -751,7 +784,7 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
 
 .pcard__top{display:flex;justify-content:space-between;align-items:baseline;
   font-family:var(--f-vcr);font-size:.68rem;letter-spacing:.18em}
-.pcard__org{color:var(--accent)}
+.pcard__org{color:var(--accent-ink)}
 .pcard__no{opacity:.4;font-variant-numeric:tabular-nums}
 .pcard__title{margin:.8em 0 .1em;font-size:clamp(1.35rem,2.4vw,1.85rem);
   font-weight:400;letter-spacing:-.01em;line-height:1.05}
@@ -769,10 +802,10 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
   cursor:pointer;opacity:.62;transition:opacity .3s,background .3s,color .3s;
 }
 .btn:hover{opacity:1}
-.btn--live{border-color:var(--accent);color:var(--accent);opacity:1}
+.btn--live{border-color:var(--accent);color:var(--accent-ink);opacity:1}
 .btn--live:hover{background:var(--accent);color:#05070a}
 .pcard__state{font-family:var(--f-vcr);font-size:.62rem;letter-spacing:.2em;opacity:.32}
-.pcard.is-live .pcard__state{color:var(--accent);opacity:.72}
+.pcard.is-live .pcard__state{color:var(--accent-ink);opacity:.9}
 
 /* Reduced motion keeps the scroller, which is now a plain scroll container
    rather than an effect, but drops the snapping and the smooth stepping,

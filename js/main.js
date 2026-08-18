@@ -448,54 +448,6 @@
   })();
 
   /* ---------------------------------------------------------- */
-  /* SCRAMBLE: headings resolve out of VCR noise                 */
-  /*                                                             */
-  /* Runs once per heading, on entry. The original text is kept  */
-  /* on the node so a re-run can never lose it, and the element  */
-  /* is width-locked first: resolving glyph by glyph changes the */
-  /* measured width every frame and would otherwise shove the    */
-  /* rest of the composition around while it settled.            */
-  /* ---------------------------------------------------------- */
-  (function () {
-    var targets = [].slice.call(document.querySelectorAll('[data-scramble]'));
-    if (!targets.length || reduce) return;
-    var POOL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&/\\<>*+=-';
-
-    function run(el) {
-      var real = el.dataset.real || (el.dataset.real = el.textContent);
-      var n = real.length;
-      var start = performance.now();
-      var DUR = 620 + n * 34;
-
-      (function paint(now) {
-        var p = Math.min(1, ((now || performance.now()) - start) / DUR);
-        var out = '';
-        for (var i = 0; i < n; i++) {
-          var c = real[i];
-          if (c === ' ') { out += ' '; continue; }
-          /* each character locks at its own moment, left to right */
-          var lock = (i / n) * 0.72;
-          if (p >= lock + 0.28) out += c;
-          else out += POOL[(Math.random() * POOL.length) | 0];
-        }
-        el.textContent = out;
-        if (p < 1) requestAnimationFrame(paint);
-        else el.textContent = real;
-      })();
-    }
-
-    if (!('IntersectionObserver' in window)) { targets.forEach(run); return; }
-    var so = new IntersectionObserver(function (es) {
-      es.forEach(function (e) {
-        if (!e.isIntersecting) return;
-        run(e.target);
-        so.unobserve(e.target);
-      });
-    }, { threshold: 0.4 });
-    targets.forEach(function (el) { so.observe(el); });
-  })();
-
-  /* ---------------------------------------------------------- */
   /* GAUGE: scroll progress and which section you are in          */
   /* ---------------------------------------------------------- */
   (function () {
