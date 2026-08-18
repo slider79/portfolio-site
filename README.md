@@ -4,7 +4,7 @@ A static portfolio built around a real-time 3D PSP you can operate. Every
 project I have shipped is a cartridge; the d-pad browses them, ✕ launches the
 deployment, ○ opens the source.
 
-**Live:** _add the Vercel URL here after the first deploy_
+**Live:** https://shuja-jamal.vercel.app
 
 No build step, no framework, no bundler. Open `index.html` off any static
 server and it runs.
