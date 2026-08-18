@@ -114,6 +114,27 @@ Two, deliberately, and they do not mix:
 A `.lay` inside a `.wrap` will not position, and a percentage coordinate
 outside a `.stage` has nothing to resolve against.
 
+## Heading animation
+
+`js/hypertext.js` is a vanilla port of the 21st.dev / Magic UI **HyperText**
+component, which ships as React plus framer-motion plus Tailwind. This site has
+none of those and deliberately stays that way, so the algorithm was reimplemented
+directly: one `<span>` per character, an interval of `duration / (length * 10)`,
+a counter advancing `0.1` per tick so characters lock left to right, and a random
+A-Z in every slot that has not locked yet. It re-triggers on pointer enter.
+
+Two departures from the original, both load-bearing:
+
+- Casing is preserved rather than uppercased, because these headings are lower
+  case by design. Flip `UPPERCASE` at the top of the file to match the component.
+- Every run has a hard stop, and the real text is restored on `pageshow` and when
+  a hidden tab returns. The original drives itself purely from a timer with no
+  recovery path, so an interrupted run strands the heading part way through,
+  showing its first letter and a row of noise. A back navigation restoring from
+  bfcache does exactly that.
+
+Mark a heading with `data-hyper`. Optionally set `data-hyper-duration` in ms.
+
 ## Motion trackers
 
 `js/track.js` draws hairline contour trackers welded to each cut-out.
@@ -134,8 +155,9 @@ gets a tracker with no build step.
 ## Reduced motion
 
 `prefers-reduced-motion` stops the cover animating (it paints once per
-selection), turns the pinned horizontal rail into an ordinary vertical list,
-freezes the trackers, and drops the scramble, skew and parallax.
+selection), drops the rail's scroll snapping, freezes the trackers, resolves
+the headings instantly instead of animating them, and drops the skew, the
+parallax and the cursor's swell.
 
 ---
 
