@@ -262,14 +262,14 @@ body.is-invert .boot__mark{
    text and leaves the gaps between lines open. Padding is deliberately tiny,
    a fraction of an em, so the bed is barely larger than the glyphs. */
 .ink{
-  background:#000;
-  color:#fff;
-  padding:.08em .34em .12em;
+  background:var(--paper);
+  padding:.22em .36em .26em;
   box-decoration-break:clone;
   -webkit-box-decoration-break:clone;
-  /* the leading has to open up or consecutive lines' beds collide and the
-     per-line effect closes back into a solid block */
-  line-height:1.75;
+  /* The beds are MEANT to touch now. Padding is set so consecutive lines
+     overlap slightly and tile into one continuous sheet of paper, with no
+     hairline gaps for artwork to show through between lines. */
+  line-height:1.6;
 }
 
 /* Single-line labels get the italic slant the brief asked for. The skew is on
@@ -280,37 +280,33 @@ body.is-invert .boot__mark{
 .ink--slant{
   position:relative;isolation:isolate;
   display:inline-block;
-  background:none;color:#fff;
+  background:none;
   padding:.14em .5em .16em;
   line-height:1.35;
 }
 .ink--slant::before{
   content:'';position:absolute;inset:0;z-index:-1;
-  background:#000;
+  background:var(--paper);
   transform:skewX(-11deg);
 }
 
 /* ---- hyper text -------------------------------------------------------
-   One inline-block per character, which is what makes the effect safe to
-   run on a heading: the box is laid out once from the real text, so the
-   letter storm swapping glyphs underneath can never reflow or resize it.
-   VCR is monospaced, so every substitute occupies the same cell.
+   One inline-block per character, which is what makes the effect safe to run
+   on a heading: the box is laid out once from the real text, so the letter
+   storm swapping glyphs underneath can never reflow or resize it. VCR is
+   monospaced, so every substitute occupies the same cell.
 
-   The fade matches the initial/animate pair the React original passed to
-   framer-motion. Delay is set per span in JS so the stagger follows the
-   reading direction. */
-.ht{
-  display:inline-block;
-  opacity:0;
-  translate:0 -.28em;
-  transition:opacity .26s var(--ease),translate .26s var(--ease);
-}
-.ht.is-in{opacity:1;translate:0 0}
+   Deliberately NO opacity here. The original faded each span in on its own
+   delay, which meant a heading's legibility depended on JS finishing, and a
+   stalled run left the first letter showing and the rest invisible. The
+   character swap is the whole effect; the letters are simply always visible,
+   so there is no state in which this markup can render as nothing.
+
+   (The guard that used to sit here, html:not(.js) .ht, matched permanently
+   because nothing ever set that class, so it had been overriding the fade
+   since the day it was written. Removed with the fade it was guarding.) */
+.ht{display:inline-block}
 .ht--sp{width:.34em}
-/* Never leave a heading invisible if the script fails to load or throws
-   before it can add is-in. Without this the markup would render as a row of
-   transparent spans, which is the failure the effect must not have. */
-.no-js .ht,html:not(.js) .ht{opacity:1;translate:0 0}
 
 /* tracking overlay, above the cut-outs, under the type, never interactive */
 .trk{
@@ -958,7 +954,10 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
 /* Only finished roles are dimmed. The degree leads the timeline now, so it is
    current, not archive, and reads at full strength. */
 .tl__i--past{opacity:.001}
-.tl__i--past.is-in{opacity:.72}
+/* Full strength once revealed. A row opacity multiplies the ink beds along
+   with the words, so the last two entries rendered as grey slabs instead of
+   paper. The hollow marker already tells a finished role from a current one. */
+.tl__i--past.is-in{opacity:1}
 
 .lead{margin-top:clamp(2.4rem,6vh,4rem);padding-top:clamp(1.6rem,4vh,2.4rem);
   border-top:1px solid currentColor;border-color:color-mix(in srgb,currentColor 18%,transparent)}

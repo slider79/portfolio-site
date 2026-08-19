@@ -39,6 +39,19 @@
   var targets = [].slice.call(document.querySelectorAll('[data-hyper]'));
   if (!targets.length) return;
 
+  /* Desktop only, and that is a deliberate retreat.
+
+     The effect is driven by setInterval, and mobile browsers throttle timers
+     hard during a scroll and in backgrounded tabs. When that happens the run
+     stalls part way and the heading sits there reading its first character
+     followed by a row of noise. The hard stop below cannot rescue it either,
+     because a setTimeout is throttled by exactly the same mechanism.
+
+     A decorative flourish is not worth a heading nobody can read, and at phone
+     size the storm is barely perceptible anyway. Headings are left as plain
+     text there, untouched. */
+  if (window.matchMedia('(max-width: 860px)').matches) return;
+
   function build(el) {
     /* The real text is stashed on the node before anything mutates it, so
        it can always be recovered no matter how a run ends. */
@@ -60,10 +73,7 @@
   function settle(st) {
     clearInterval(st.tick); clearTimeout(st.hard);
     st.tick = st.hard = null;
-    for (var i = 0; i < st.spans.length; i++) {
-      st.spans[i].textContent = st.real[i];
-      st.spans[i].classList.add('is-in');
-    }
+    for (var i = 0; i < st.spans.length; i++) st.spans[i].textContent = st.real[i];
   }
 
   function play(el) {
@@ -76,16 +86,6 @@
     var dur = parseInt(el.dataset.hyperDuration, 10) || DEFAULT_DURATION;
     var step = Math.max(16, dur / (n * 10));
     var at = 0;
-
-    /* Each letter fades in on its own beat, which is what framer-motion's
-       initial/animate pair was doing per span in the original. */
-    for (var i = 0; i < n; i++) {
-      st.spans[i].classList.remove('is-in');
-      st.spans[i].style.transitionDelay = (i * 22) + 'ms';
-    }
-    requestAnimationFrame(function () {
-      for (var i = 0; i < n; i++) st.spans[i].classList.add('is-in');
-    });
 
     st.tick = setInterval(function () {
       if (at >= n) return settle(st);
