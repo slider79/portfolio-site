@@ -241,7 +241,10 @@
     document.body.classList.toggle('is-invert', on);
     if (invBtn) invBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
     var meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute('content', on ? '#000000' : '#ffffff');
+    /* Matches the paper, and it used to be backwards. Default is NOT inverted
+       and the page is black there, so the chrome tint has to be black too; it
+       was reporting white, and white once the page had actually gone white. */
+    if (meta) meta.setAttribute('content', on ? '#ffffff' : '#000000');
     if (SK.setShellInvert) SK.setShellInvert(on);   // the PSP casing goes white
     if (typeof onScroll === 'function') onScroll();  // repaint the backdrop tone
     try { localStorage.setItem('sj_invert', on ? '1' : '0'); } catch (e) {}
