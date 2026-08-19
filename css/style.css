@@ -117,7 +117,7 @@ body.is-invert .sec--dark {--el-blend:multiply;--el-inv:0}
    Same trick the controls use. */
 :root{--trk:rgba(146,146,146,.42);--trk-hi:rgba(190,190,190,.52)}
 
-.el,.boot__img{filter:invert(var(--el-inv));user-select:none;-webkit-user-drag:none}
+.el{filter:invert(var(--el-inv));user-select:none;-webkit-user-drag:none}
 /* max-width:none is load-bearing. The base `img{max-width:100%}` clamps any
    cut-out authored wider than its stage, and when only ONE axis is clamped
    while the other is an explicit length, the aspect ratio breaks and the
@@ -135,12 +135,39 @@ body.is-invert .sec--dark {--el-blend:multiply;--el-inv:0}
 }
 body.is-invert .boot{--el-inv:1}
 .boot.is-done{opacity:0;visibility:hidden}
-/* The wordmark is a wide lockup (roughly 5.8:1), not the square mark this
-   replaced, so it needs a much larger width to reach a legible glyph size.
-   Placeholder art: swap the file and re-check this width, since it is set
-   against that aspect ratio. image-rendering is moot for an SVG of hard-edged
-   rects but costs nothing if a bitmap is ever dropped back in. */
-.boot__img{width:min(560px,82vw);image-rendering:pixelated}
+/* The wordmark, as two supplied PNGs on transparency rather than one asset
+   flipped by a filter. A background-image means the browser only ever fetches
+   the version the current theme needs, and aspect-ratio holds the box before
+   the image decodes so the boot screen never jumps as it loads.
+
+   No image-rendering:pixelated here. The art is 2265px wide being drawn at a
+   few hundred, and forcing nearest-neighbour on a downscale of that ratio
+   aliases the pixel face into a mess. Smooth downscaling is what keeps it
+   crisp. */
+.boot__mark{
+  width:min(620px,86vw);
+  /* Cropped to the artwork's ink, not to the file.
+
+     The PNGs are 2265x618 but the lettering only occupies a 1929x171 band
+     inside that, so 76% of the file is transparent padding, and it is not even
+     centred: 27.7% above the type against 44.7% below. Sizing the box to the
+     file therefore made the mark three times taller than the type it shows and
+     hung it visibly high, which also inflated the gap to the loading bar.
+
+     So the box takes the INK's ratio and the background is scaled and offset so
+     that band fills it exactly. 117.42% is 2265/1929, the factor that makes the
+     ink span the full width. The offsets are the CSS background-position
+     formula solved for the ink's corner landing on the box's corner:
+     horizontally the padding is symmetric so it falls out at 50%, vertically
+     171/447 gives 38.26%. Re-derive both if the artwork is ever re-exported. */
+  aspect-ratio:1929 / 171;
+  background:url('../assets/el/naanchalant-black.png') no-repeat;
+  background-size:117.42% auto;
+  background-position:50% 38.26%;
+}
+body.is-invert .boot__mark{
+  background-image:url('../assets/el/naanchalant-white.png');
+}
 .boot__bar{width:min(230px,44vw);height:2px;background:currentColor;opacity:.18;position:relative;overflow:hidden}
 .boot__bar span{position:absolute;inset:0 100% 0 0;background:var(--on-light);transition:right .16s linear}
 .boot__pct{font-family:var(--f-vcr);font-size:.95rem;letter-spacing:.14em;color:var(--on-light);opacity:.55}
