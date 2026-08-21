@@ -405,7 +405,34 @@
         tio.unobserve(row);
       });
     }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
-    document.querySelectorAll('.tl__i, .stack__g').forEach(function (el) { tio.observe(el); });
+    var trows = [].slice.call(document.querySelectorAll('.tl__i, .stack__g'));
+    trows.forEach(function (el) { tio.observe(el); });
+
+    /* The same failsafe the cut-outs and headline type get above, and for the
+       same reason: these rows start at opacity 0, so the observer failing to
+       fire does not degrade the effect, it deletes the content. That is what
+       was emptying the history section on phones, where a fast flick past a
+       tall row could leave it never having been reported as intersecting.
+
+       PER ELEMENT and only for what is actually on screen, so a row further
+       down still animates when you reach it. Do not turn this into a blanket
+       timeout: an earlier build did that and killed every reveal past the
+       fold. */
+    var revealNear = function () {
+      var vh = window.innerHeight, live = 0;
+      for (var z = 0; z < trows.length; z++) {
+        var el = trows[z];
+        if (el.classList.contains('is-in')) continue;
+        live++;
+        var r = el.getBoundingClientRect();
+        if (r.top < vh && r.bottom > 0) { el.classList.add('is-in'); tio.unobserve(el); }
+      }
+      if (!live && tguard) { clearInterval(tguard); tguard = null; }
+    };
+    var tguard = setInterval(revealNear, 900);
+    revealNear();
+    window.addEventListener('scroll', revealNear, { passive: true });
+    window.addEventListener('resize', revealNear, { passive: true });
   }
 
   /* ---------------------------------------------------------- */

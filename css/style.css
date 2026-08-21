@@ -53,6 +53,11 @@
    an already-eased number. */
 @property --cur-scale{syntax:'<number>';inherits:false;initial-value:1}
 
+/* Registered so the cartridge shells can tween between their resting, hover
+   and selected tints. An unregistered custom property is not interpolatable,
+   so the whole moulded gradient stack would jump rather than settle. */
+@property --tint-amt{syntax:'<percentage>';inherits:false;initial-value:16%}
+
 /* invert, every surface and every cut-out flips together */
 body.is-invert{
   --light:#000000;
@@ -91,7 +96,12 @@ a{color:inherit;text-decoration:none}
 
    Turned off entirely under reduced motion, where unrequested repositioning
    is the whole thing being opted out of. */
-@media (prefers-reduced-motion:no-preference){
+/* Desktop only. On a phone the page is already scrolled by a flick with its
+   own momentum, and a snap fighting that reads as the page grabbing at you
+   rather than as polish. Pointer and hover are the honest test for a real
+   pointing device rather than width alone. */
+@media (prefers-reduced-motion:no-preference) and (min-width:861px)
+   and (hover:hover) and (pointer:fine){
   html{scroll-snap-type:y proximity}
   .sec{scroll-snap-align:start}
   /* never trap: a fast scroll may always skip a section outright */
@@ -107,6 +117,11 @@ a{color:inherit;text-decoration:none}
    was the black-box bug on the first and last pages.                        */
 .sec--light{--paper:var(--light);color:var(--on-light);--el-blend:multiply;--el-inv:0}
 .sec--dark {--paper:var(--dark); color:var(--on-dark); --el-blend:screen;  --el-inv:1}
+/* Pale paper needs a deeper mix or the shells wash out to near white and the
+   moulding has nothing to catch. */
+body.is-invert .pcard{--tint-amt:30%}
+body.is-invert .pcard:hover{--tint-amt:38%}
+body.is-invert .pcard.is-sel{--tint-amt:46%}
 body.is-invert .sec--light{--el-blend:screen;  --el-inv:1}
 body.is-invert .sec--dark {--el-blend:multiply;--el-inv:0}
 
@@ -847,25 +862,89 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
      and as low as 2.05:1 on light at 10 and 11px, both under the 4.5 a
      body-size string needs. */
   --accent-ink:color-mix(in srgb, var(--accent) 58%, var(--on-dark));
+
+  /* ---- tinted clear plastic ------------------------------------------
+     The card is a moulded cartridge shell rather than a rectangle: the
+     early 2000s translucent look, an atomic purple N64 or a clear GBA
+     cart, where the colour is IN the plastic and the light comes off the
+     mould rather than off a flat fill.
+
+     Everything is built from --tint-amt, one number for how much accent
+     is dissolved into the paper. Hover and selection move that number
+     instead of replacing the background, which is why the whole layered
+     stack survives a state change. It is registered with @property so it
+     can actually be transitioned; an unregistered custom property would
+     jump between states.
+
+     The mix is against --paper, never against transparency, so the shell
+     stays opaque. Genuinely translucent cards let the floppy and UMD
+     cut-outs behind the rail show straight through the copy at both
+     ends. The transparency here is an impression, not a fact. */
+  --tint:color-mix(in srgb, var(--accent) var(--tint-amt), var(--paper));
+  --tint-lit:color-mix(in srgb, var(--accent) calc(var(--tint-amt) + 14%), var(--paper));
+  --tint-deep:color-mix(in srgb, var(--accent) calc(var(--tint-amt) - 8%), var(--paper));
+  --moulding:color-mix(in srgb, var(--on-dark) 14%, transparent);
+  --gloss:color-mix(in srgb, var(--on-dark) 13%, transparent);
+
+  position:relative;
   flex:0 0 clamp(270px,25vw,360px);
   scroll-snap-align:center;
   display:flex;flex-direction:column;
-  padding:clamp(1.1rem,2vw,1.6rem);
+  /* extra headroom for the moulded shoulder drawn by ::after */
+  padding:calc(clamp(1.1rem,2vw,1.6rem) + 15px) clamp(1.1rem,2vw,1.6rem) clamp(1.1rem,2vw,1.6rem);
+  /* a cartridge is round at the top where it is held and square at the
+     bottom where it seats into the slot */
+  border-radius:15px 15px 5px 5px;
   border:1px solid color-mix(in srgb, var(--accent) 42%, transparent);
-  /* Mixed against the paper rather than against transparency, so the card is
-     opaque. At 7% of the accent over nothing the cards were very nearly clear,
-     and the floppy and UMD cut-outs behind the two ends of the rail showed
-     straight through the first and last cards' copy. */
-  background:color-mix(in srgb, var(--accent) 12%, var(--paper));
+  background:
+    /* two screw wells, low corners */
+    radial-gradient(circle at 15px calc(100% - 15px),
+      var(--moulding) 0 2.5px, transparent 3.2px),
+    radial-gradient(circle at calc(100% - 15px) calc(100% - 15px),
+      var(--moulding) 0 2.5px, transparent 3.2px),
+    /* the shell: brighter along the top lip, settling through the body,
+       darkening into the seated edge */
+    linear-gradient(180deg,
+      var(--tint-lit) 0, var(--tint) 24%, var(--tint) 76%, var(--tint-deep) 100%);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--on-dark) 18%, transparent),   /* light piping along the top edge */
+    inset 0 -14px 20px -14px color-mix(in srgb, var(--on-dark) 22%, transparent);
   cursor:pointer;
   transform:skewY(var(--skew,0deg));
-  transition:border-color .4s var(--ease),background .4s var(--ease),
+  transition:--tint-amt .4s var(--ease),border-color .4s var(--ease),
              scale .5s var(--ease),translate .5s var(--ease);
 }
-.pcard:hover{background:color-mix(in srgb, var(--accent) 18%, var(--paper))}
+
+/* The specular sheen, confined to the upper shell.
+
+   A full diagonal band across the card was the obvious move and the wrong
+   one: it lays a streak straight over the blurb, and it implies a light
+   source somewhere off to the side of a page that is lit from above. This
+   catches the top curve only and has faded out well before the body copy
+   starts, which is both easier to read and closer to how light actually sits
+   on a moulded shell. Drawn in the ink colour at low alpha, so it is a pale
+   sheen on a dark cartridge and a soft reflection on a pale one. */
+.pcard::before{
+  content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:
+    linear-gradient(163deg, var(--gloss) 0 9%, transparent 34%),
+    radial-gradient(130% 46% at 8% -8%,
+      color-mix(in srgb, var(--on-dark) 9%, transparent) 0, transparent 68%);
+}
+
+/* The grip ridges across the shoulder, inset from the sides the way the
+   moulded rib on a cartridge is. */
+.pcard::after{
+  content:'';position:absolute;left:17%;right:17%;top:7px;height:8px;
+  pointer-events:none;border-radius:4px;
+  background:repeating-linear-gradient(90deg,
+    var(--moulding) 0 2px, transparent 2px 5px);
+}
+
+.pcard:hover{--tint-amt:24%}
 .pcard.is-sel{
+  --tint-amt:32%;
   border-color:var(--accent);
-  background:color-mix(in srgb, var(--accent) 24%, var(--paper));
   translate:0 -8px;
 }
 
