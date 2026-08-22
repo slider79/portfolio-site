@@ -863,67 +863,88 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
      body-size string needs. */
   --accent-ink:color-mix(in srgb, var(--accent) 58%, var(--on-dark));
 
-  /* ---- tinted clear plastic ------------------------------------------
-     The card is a moulded cartridge shell rather than a rectangle: the
-     early 2000s translucent look, an atomic purple N64 or a clear GBA
-     cart, where the colour is IN the plastic and the light comes off the
-     mould rather than off a flat fill.
+  /* ---- a cartridge, not a card ---------------------------------------
+     Modelled on a DMG shell in tinted translucent plastic. Three features
+     do the recognising, and the earlier version had none of them:
 
-     Everything is built from --tint-amt, one number for how much accent
-     is dissolved into the paper. Hover and selection move that number
-     instead of replacing the background, which is why the whole layered
-     stack survives a state change. It is registered with @property so it
-     can actually be transitioned; an unregistered custom property would
-     jump between states.
+       the 45 degree chamfer on the top right corner, which on the real
+       thing is the key that stops the cart going in backwards, and is the
+       single most identifiable thing about the silhouette;
+
+       the recessed label plate, the sunken panel the sticker sits in,
+       which here gives the copy a natural home and a reason to be inset;
+
+       the grip ribs along the bottom, the moulded ridges you hook a
+       thumbnail into to pull the cart out of the slot.
+
+     Everything is built from --tint-amt, one number for how much accent is
+     dissolved into the paper. Hover and selection move that number rather
+     than replacing the background, so the whole layered stack survives a
+     state change. Registered with @property so it tweens instead of
+     jumping between states.
 
      The mix is against --paper, never against transparency, so the shell
-     stays opaque. Genuinely translucent cards let the floppy and UMD
-     cut-outs behind the rail show straight through the copy at both
-     ends. The transparency here is an impression, not a fact. */
+     stays opaque. Genuinely clear cards let the floppy and UMD cut-outs
+     behind the rail show straight through the copy at both ends. The
+     translucency is an impression, not a fact. */
   --tint:color-mix(in srgb, var(--accent) var(--tint-amt), var(--paper));
   --tint-lit:color-mix(in srgb, var(--accent) calc(var(--tint-amt) + 14%), var(--paper));
   --tint-deep:color-mix(in srgb, var(--accent) calc(var(--tint-amt) - 8%), var(--paper));
-  --moulding:color-mix(in srgb, var(--on-dark) 14%, transparent);
+  --moulding:color-mix(in srgb, var(--on-dark) 15%, transparent);
   --gloss:color-mix(in srgb, var(--on-dark) 13%, transparent);
+  --rim:color-mix(in srgb, var(--accent) 42%, transparent);
+  /* A recess is darker in BOTH polarities, so it is cut with black rather
+     than with the paper, which would lighten it once inverted. */
+  --sink:color-mix(in srgb, #000 9%, transparent);
+  --sink-edge:color-mix(in srgb, #000 30%, transparent);
+  --lip:color-mix(in srgb, var(--on-dark) 22%, transparent);
+
+  --chamfer:34px;
 
   position:relative;
   flex:0 0 clamp(270px,25vw,360px);
   scroll-snap-align:center;
   display:flex;flex-direction:column;
-  /* extra headroom for the moulded shoulder drawn by ::after */
-  padding:calc(clamp(1.1rem,2vw,1.6rem) + 15px) clamp(1.1rem,2vw,1.6rem) clamp(1.1rem,2vw,1.6rem);
-  /* a cartridge is round at the top where it is held and square at the
-     bottom where it seats into the slot */
-  border-radius:15px 15px 5px 5px;
-  border:1px solid color-mix(in srgb, var(--accent) 42%, transparent);
+  /* right padding clears the chamfer, bottom padding clears the ribs */
+  padding:clamp(1.1rem,2vw,1.6rem) clamp(1.1rem,2vw,1.6rem) calc(clamp(1.1rem,2vw,1.6rem) + 16px);
+  /* square at the chamfered corner, since the cut replaces the radius there */
+  border-radius:13px 0 5px 5px;
   background:
-    /* two screw wells, low corners */
-    radial-gradient(circle at 15px calc(100% - 15px),
-      var(--moulding) 0 2.5px, transparent 3.2px),
-    radial-gradient(circle at calc(100% - 15px) calc(100% - 15px),
-      var(--moulding) 0 2.5px, transparent 3.2px),
-    /* the shell: brighter along the top lip, settling through the body,
-       darkening into the seated edge */
+    /* grip ribs, centred along the bottom edge */
+    repeating-linear-gradient(90deg,
+      var(--moulding) 0 3px, transparent 3px 7px) 50% calc(100% - 9px) / 38% 9px no-repeat,
+    /* The label plate. It reads from its EDGES, a shadow under the upper lip
+       and a lit line along the lower one, with only a whisper of darkening
+       across the face. A heavier wash was the first attempt and it muddied
+       the tint badly once inverted, turning a pastel shell into a grey slab.
+       A moulded recess this shallow is mostly its own edges anyway. */
+    linear-gradient(var(--lip), var(--lip)) 13px 77% / calc(100% - 26px) 1px no-repeat,
+    linear-gradient(var(--sink-edge), var(--sink-edge)) 13px 6% / calc(100% - 26px) 1px no-repeat,
+    linear-gradient(var(--sink), var(--sink)) 13px 6% / calc(100% - 26px) 71% no-repeat,
+    /* screw wells, low corners */
+    radial-gradient(circle at 15px calc(100% - 15px), var(--moulding) 0 2.5px, transparent 3.2px),
+    radial-gradient(circle at calc(100% - 15px) calc(100% - 15px), var(--moulding) 0 2.5px, transparent 3.2px),
+    /* the shell: lit along the top lip, settling through the body, darkening
+       into the edge that seats in the slot */
     linear-gradient(180deg,
       var(--tint-lit) 0, var(--tint) 24%, var(--tint) 76%, var(--tint-deep) 100%);
   box-shadow:
-    inset 0 1px 0 color-mix(in srgb, var(--on-dark) 18%, transparent),   /* light piping along the top edge */
+    inset 0 0 0 1px var(--rim),
+    inset 0 1px 0 color-mix(in srgb, var(--on-dark) 20%, transparent),
     inset 0 -14px 20px -14px color-mix(in srgb, var(--on-dark) 22%, transparent);
   cursor:pointer;
   transform:skewY(var(--skew,0deg));
-  transition:--tint-amt .4s var(--ease),border-color .4s var(--ease),
+  transition:--tint-amt .4s var(--ease),box-shadow .4s var(--ease),
              scale .5s var(--ease),translate .5s var(--ease);
 }
 
 /* The specular sheen, confined to the upper shell.
 
-   A full diagonal band across the card was the obvious move and the wrong
-   one: it lays a streak straight over the blurb, and it implies a light
-   source somewhere off to the side of a page that is lit from above. This
-   catches the top curve only and has faded out well before the body copy
-   starts, which is both easier to read and closer to how light actually sits
-   on a moulded shell. Drawn in the ink colour at low alpha, so it is a pale
-   sheen on a dark cartridge and a soft reflection on a pale one. */
+   A full diagonal band across the card was the obvious version and the wrong
+   one: it lays a streak over the blurb, and implies a light source off to the
+   side of a page that is lit from above. This catches the top curve only and
+   has faded well before the copy starts. Drawn in the ink colour at low alpha,
+   so it is pale on a dark shell and a soft reflection on a pale one. */
 .pcard::before{
   content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
   background:
@@ -932,19 +953,28 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
       color-mix(in srgb, var(--on-dark) 9%, transparent) 0, transparent 68%);
 }
 
-/* The grip ridges across the shoulder, inset from the sides the way the
-   moulded rib on a cartridge is. */
+/* The chamfer. Painted as an overlay rather than cut with clip-path, because
+   clip-path takes the rim with it and cannot be given a rounded corner on the
+   other three. A paper-coloured triangle erases the corner and a second
+   gradient lays the rim back along the diagonal. The stop sits at the
+   chamfer over root two, which is the perpendicular distance from the corner
+   to a 45 degree cut of that length. */
 .pcard::after{
-  content:'';position:absolute;left:17%;right:17%;top:7px;height:8px;
-  pointer-events:none;border-radius:4px;
-  background:repeating-linear-gradient(90deg,
-    var(--moulding) 0 2px, transparent 2px 5px);
+  content:'';position:absolute;top:-1px;right:-1px;pointer-events:none;
+  width:calc(var(--chamfer) + 2px);height:calc(var(--chamfer) + 2px);
+  background:
+    linear-gradient(225deg,
+      transparent 0 calc(var(--chamfer) / 1.414),
+      var(--rim) calc(var(--chamfer) / 1.414) calc(var(--chamfer) / 1.414 + 1px),
+      transparent calc(var(--chamfer) / 1.414 + 1px)),
+    linear-gradient(225deg,
+      var(--paper) 0 calc(var(--chamfer) / 1.414), transparent 0);
 }
 
 .pcard:hover{--tint-amt:24%}
 .pcard.is-sel{
   --tint-amt:32%;
-  border-color:var(--accent);
+  --rim:var(--accent);
   translate:0 -8px;
 }
 
