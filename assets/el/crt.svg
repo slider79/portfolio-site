@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="720" viewBox="0 0 1000 720">
+<!-- A CRT television set. Ink on paper for the same reason as the other
+     cut-outs: CSS does the cutting out with invert plus screen, so the white
+     ground is load bearing and a transparent background would blend as a hole.
+
+     The screen aperture is left as bare ground on purpose. It becomes the
+     section's own paper once blended, so the bio copy positioned over it reads
+     as ordinary ink and never has to fight the artwork underneath.
+
+     Aperture geometry, needed by the CSS that positions the copy over it:
+       x 60 to 700, y 52 to 552, so 6% to 70% across and 7.2% to 76.7% down.
+     Change the drawing and those numbers move with it.
+
+     Note for future edits: no double hyphens anywhere in this comment. XML
+     forbids them and the file then fails to parse as a silent broken image. -->
+<defs>
+  <pattern id="cht" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(22)">
+    <circle cx="4" cy="4" r="1.5" fill="#111"/>
+  </pattern>
+  <pattern id="chd" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(22)">
+    <circle cx="3.5" cy="3.5" r="2.4" fill="#111"/>
+  </pattern>
+</defs>
+
+<rect width="1000" height="720" fill="#fff"/>
+
+<g transform="translate(500 340) rotate(-1.2) translate(-500 -340)">
+
+  <!-- feet -->
+  <path d="M112 636h132v42a14 14 0 0 1-14 14h-104a14 14 0 0 1-14-14z" fill="#fff" stroke="#111" stroke-width="9"/>
+  <path d="M756 636h132v42a14 14 0 0 1-14 14h-104a14 14 0 0 1-14-14z" fill="#fff" stroke="#111" stroke-width="9"/>
+
+  <!-- cabinet -->
+  <path d="M40 34h920a26 26 0 0 1 26 26v556a26 26 0 0 1-26 26H40a26 26 0 0 1-26-26V60a26 26 0 0 1 26-26z"
+        fill="#fff" stroke="#111" stroke-width="11"/>
+  <path d="M40 34h920a26 26 0 0 1 26 26v556a26 26 0 0 1-26 26H40a26 26 0 0 1-26-26V60a26 26 0 0 1 26-26z"
+        fill="url(#cht)" opacity=".34"/>
+  <!-- cabinet bevel, a second line inset from the shell -->
+  <path d="M34 60a22 22 0 0 1 22-22h888a22 22 0 0 1 22 22" fill="none" stroke="#111" stroke-width="4" opacity=".5"/>
+
+  <!-- ===== the tube ===== -->
+  <!-- outer bezel lip -->
+  <path d="M60 52h640c8 0 14 6 14 14v472c0 8-6 14-14 14H60c-8 0-14-6-14-14V66c0-8 6-14 14-14z"
+        fill="#fff" stroke="#111" stroke-width="10"/>
+  <!-- moulded step down into the glass -->
+  <path d="M74 68h612c6 0 10 4 10 10v460c0 6-4 10-10 10H74c-6 0-10-4-10-10V78c0-6 4-10 10-10z"
+        fill="none" stroke="#111" stroke-width="4" opacity=".55"/>
+  <!-- the glass itself, barrelled: the curve is shallower across than down -->
+  <path d="M96 90c150-13 368-13 518 0 13 44 13 392 0 436-150 13-368 13-518 0-13-44-13-392 0-436z"
+        fill="#fff" stroke="#111" stroke-width="8"/>
+  <!-- a glint in the top left of the glass, the only mark inside the aperture -->
+  <path d="M132 128c46-7 104-11 150-11-52 16-102 44-140 82-8-24-10-48-10-71z" fill="#111" opacity=".13"/>
+
+  <!-- ===== control panel, right ===== -->
+  <path d="M742 68h192c6 0 10 4 10 10v460c0 6-4 10-10 10H742c-6 0-10-4-10-10V78c0-6 4-10 10-10z"
+        fill="#fff" stroke="#111" stroke-width="7"/>
+  <path d="M742 68h192c6 0 10 4 10 10v460c0 6-4 10-10 10H742c-6 0-10-4-10-10V78c0-6 4-10 10-10z"
+        fill="url(#cht)" opacity=".22"/>
+
+  <!-- two tuning knobs with tick marks -->
+  <g stroke="#111" fill="none">
+    <circle cx="838" cy="164" r="58" stroke-width="8"/>
+    <circle cx="838" cy="164" r="40" stroke-width="5" opacity=".6"/>
+    <path d="M838 164l0-40" stroke-width="9" stroke-linecap="round"/>
+    <g stroke-width="4" opacity=".7">
+      <path d="M838 90v-12M896 164h12M838 238v12M780 164h-12"/>
+      <path d="M880 122l9-9M880 206l9 9M796 206l-9 9M796 122l-9-9"/>
+    </g>
+    <circle cx="838" cy="330" r="46" stroke-width="8"/>
+    <circle cx="838" cy="330" r="30" stroke-width="5" opacity=".6"/>
+    <path d="M838 330l28 28" stroke-width="9" stroke-linecap="round"/>
+    <g stroke-width="4" opacity=".7">
+      <path d="M838 272v-10M896 330h10M838 388v10M780 330h-10"/>
+    </g>
+  </g>
+  <circle cx="838" cy="164" r="9" fill="#111"/>
+  <circle cx="838" cy="330" r="7" fill="#111"/>
+
+  <!-- push buttons -->
+  <g fill="#fff" stroke="#111" stroke-width="6">
+    <rect x="766" y="410" width="60" height="26" rx="6"/>
+    <rect x="850" y="410" width="60" height="26" rx="6"/>
+    <rect x="766" y="452" width="60" height="26" rx="6"/>
+    <rect x="850" y="452" width="60" height="26" rx="6"/>
+  </g>
+
+  <!-- power lamp -->
+  <circle cx="770" cy="514" r="11" fill="#111"/>
+  <circle cx="770" cy="514" r="20" fill="none" stroke="#111" stroke-width="4" opacity=".45"/>
+
+  <!-- badge -->
+  <g font-family="Helvetica, Arial, sans-serif" font-size="26" font-weight="700"
+     font-style="italic" fill="#111" opacity=".8">
+    <text x="806" y="524">SJ-88</text>
+  </g>
+
+  <!-- ===== speaker grille, along the bottom ===== -->
+  <g stroke="#111" stroke-width="7" opacity=".62">
+    <path d="M92 592h560M92 610h560"/>
+  </g>
+  <g fill="#111" opacity=".5">
+    <rect x="700" y="580" width="240" height="42" rx="10" fill="url(#chd)"/>
+  </g>
+  <rect x="700" y="580" width="240" height="42" rx="10" fill="none" stroke="#111" stroke-width="5" opacity=".6"/>
+
+  <!-- screws -->
+  <g stroke="#111" stroke-width="4" opacity=".55" fill="none">
+    <circle cx="44" cy="62" r="8"/><circle cx="956" cy="62" r="8"/>
+    <circle cx="44" cy="614" r="8"/><circle cx="956" cy="614" r="8"/>
+  </g>
+</g>
+</svg>

@@ -232,24 +232,19 @@
     <div class="stage__art">
       <img src="assets/el/cd-a.png" alt="" class="el el--cd-a" aria-hidden="true" />
       <img src="assets/el/cd-b.png" alt="" class="el el--cd-b" aria-hidden="true" />
+      <img src="assets/el/crt.svg" alt="" class="el el--crt" aria-hidden="true" />
     </div>
     <h2 class="lay lay--abouth" data-hyper>About me</h2>
-    <!-- The bio is shown on a CRT. The set is drawn entirely in CSS: .lay--bio
-         is the moulded shell, .crt__glass is the tube, and the chin below it
-         carries the badge and the power lamp. Nothing here depends on script,
-         so the copy is readable even if every stylesheet and every byte of JS
-         fails to arrive. -->
-    <div class="lay lay--bio crt">
-      <div class="crt__glass">
+    <!-- The copy sits on the glass of the CRT drawn in assets/el/crt.svg. The
+         set is artwork, positioned as an ordinary cut-out, and this block is
+         placed over its aperture. Keeping them separate means the copy is
+         still plain text on plain paper: it needs nothing from the artwork to
+         be readable, and degrades to a normal paragraph if the SVG never
+         arrives. -->
+    <div class="lay lay--bio">
       <p>I'm Muhammad Shuja Jamal, a software engineering student at FAST NUCES Lahore, currently interning across AI, networking and security at once.</p>
       <p>I build across the stack: React and Next.js on the front, Node and Django behind it, and increasingly Python where the interesting problems are. Lately that has meant AI agents that call tools, retrieval systems that stay honest about their sources, and a peer-to-peer network with no server in the middle of it. I like turning messy problems into clean, well-documented software, and I would rather test a tool myself than read what its landing page claims.</p>
       <p>Off the keyboard: photography, reading, running, and motorcycles (a lot of motorcycles).</p>
-      </div>
-      <div class="crt__chin" aria-hidden="true">
-        <span class="crt__lamp"></span>
-        <span class="crt__badge">SJ-88</span>
-        <span class="crt__dial"></span>
-      </div>
     </div>
   </div>
 </section>
