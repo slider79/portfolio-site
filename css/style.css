@@ -291,7 +291,13 @@ body.is-invert .boot__mark{
    a pseudo-element rather than on the box, so the bed leans while the type
    inside stays upright: skewing the element itself would drag the letterforms
    over with it. isolation keeps the z-index:-1 inside this element rather than
-   dropping the bed behind an ancestor's background. */
+   dropping the bed behind an ancestor's background.
+
+   REQUIRES the element to stay positioned. The bed is inset:0 against its
+   containing block, so anything that sets an .ink--slant element back to
+   position:static hands the bed the nearest positioned ancestor instead and
+   it balloons to cover that whole box. Use position:relative when
+   repositioning one of these, never static. */
 .ink--slant{
   position:relative;isolation:isolate;
   display:inline-block;
@@ -1108,7 +1114,26 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
   .machine__intro{margin-top:clamp(2rem,6vh,3rem)}
   .keys{display:none}
   .tl__i h3{padding-right:0}
-  .tl__when{position:static;display:inline-block;margin-bottom:.5em}
+  /* relative, NOT static, and that single word is the whole bug.
+
+     .tl__when also carries .ink--slant, whose bed is an absolutely positioned
+     ::before at inset:0. Making the date static strips its containing block,
+     so the bed stopped sizing to the date and resolved against .tl__i instead,
+     covering the entire row in opaque paper.
+
+     It then painted OVER every title in that row: .tl__when is inline-block,
+     and inline-level descendants paint at step 5 of the stacking algorithm
+     while block-level ones like h3 and p paint at step 3. The skew is what
+     left a survivor. skewX(-11deg) on a box that tall displaces its top edge
+     right by tan(11deg) times half the height, roughly 19px, so a wedge at
+     the top left stayed uncovered: one character of a 17px title, which is
+     exactly what was showing.
+
+     top and right have to be cancelled too. Under position:relative the
+     offsets from the base rule stop being ignored and start shifting the
+     element. */
+  .tl__when{position:relative;top:auto;right:auto;
+    display:inline-block;margin-bottom:.5em}
   .el--floppy,.el--umd,.el--terminal{opacity:.3}
 }
 
