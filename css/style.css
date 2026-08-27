@@ -53,6 +53,12 @@
    an already-eased number. */
 @property --cur-scale{syntax:'<number>';inherits:false;initial-value:1}
 
+/* How locked in the picture is: 0 is pure snow, 1 is a clean signal. Registered
+   so it interpolates, which is what lets the copy melt out of the noise rather
+   than snapping between two states. Defaults to 1, so a page with no script
+   shows a tuned in screen. */
+@property --tune{syntax:'<number>';inherits:true;initial-value:1}
+
 /* Registered so the cartridge shells can tween between their resting, hover
    and selected tints. An unregistered custom property is not interpolatable,
    so the whole moulded gradient stack would jump rather than settle. */
@@ -450,8 +456,24 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
 
    Redraw the artwork and these have to be re-derived from its glass path. */
 .el--crt{left:21%;top:22%;width:58%}
+
+/* The copy is centred in the glass rather than hung from a measured top.
+   Giving it the aperture's full height and centring inside it means the
+   margins stay even whatever the copy reflows to, instead of holding only at
+   the one width the number was measured at.
+
+   Glass in stage terms: left 26.57%, top 31.28%, 30.04% wide, 44.97% tall.
+   Insetting about 1% all round for the barrel gives the box below.
+
+   The rotation matches the set. The artwork carries a rotate(-1.2) on its
+   whole group, so copy sitting dead level read as skewed against it. */
 .lay--bio{
-  left:28.4%;top:34.8%;width:26.4%;margin-left:0;
+  left:28.4%;top:32.3%;width:26.4%;height:42.9%;margin-left:0;
+  display:flex;flex-direction:column;justify-content:center;
+  transform:translateY(var(--ty,0)) rotate(-1.2deg);
+  /* Legibility is driven by the tuning dial. At --tune 1 both are no-ops. */
+  filter:blur(calc((1 - var(--tune)) * 2.6px));
+  opacity:calc(.34 + var(--tune) * .66);
   /* Sized to the glass. The set and the copy are both a fixed share of the
      stage, so a single cqw term keeps them locked together at every width and
      no svh clamp is needed: if it fits once it fits everywhere. */
@@ -465,6 +487,64 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
 }
 .lay--bio p{margin:0}
 .lay--bio p+p{margin-top:.6em}
+
+/* The reveal system owns filter and opacity on every .lay, and its shown
+   state sets filter:none, which wiped the tuning blur the moment the section
+   arrived. The bio opts out of that: the tuning IS its entrance, so --tune
+   governs it in both reveal states and the two stop fighting. Specificity has
+   to beat .rev.is-shown, hence naming all three classes. */
+.lay--bio.rev,
+.lay--bio.rev.is-shown{
+  filter:blur(calc((1 - var(--tune)) * 2.6px));
+  opacity:calc(.34 + var(--tune) * .66);
+  visibility:visible;
+}
+
+/* ---- static, and the dial that clears it --------------------------------
+   The snow is a small canvas scaled up with pixelated rendering rather than
+   noise drawn at full size: a 160 by 120 buffer is 19k pixels to refill, which
+   is cheap enough to animate, and upscaling it gives the coarse grain a tube
+   actually shows. It sits exactly over the glass. */
+.crt__snow{
+  position:absolute;z-index:4;pointer-events:none;
+  /* Inset from the glass bounding box, not flush to it. The tube is
+     barrelled, so a rectangle on its bounds spills onto the bezel at the
+     corners by about 5px. */
+  left:27.2%;top:32.0%;width:28.8%;height:43.5%;
+  transform:rotate(-1.2deg);
+  border-radius:3% / 4%;
+  image-rendering:pixelated;
+  opacity:calc(1 - var(--tune));
+  mix-blend-mode:var(--el-blend);
+}
+
+/* The dial sits on the knob drawn in the artwork, which is deliberately drawn
+   without a pointer so this can supply a live one. Centre from the SVG:
+   83.4% across the set and 21.8% down it, which lands here once the set's own
+   position is folded in. */
+.crt__dial{
+  position:absolute;z-index:6;
+  left:calc(21% + 58% * 0.834);top:calc(22% + 74.2% * 0.218);
+  width:calc(58% * 0.116);aspect-ratio:1;
+  translate:-50% -50%;
+  border:0;background:none;padding:0;border-radius:50%;
+  cursor:grab;touch-action:none;
+}
+.crt__dial:active{cursor:grabbing}
+.crt__dial:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+.crt__needle{
+  position:absolute;left:50%;top:50%;
+  width:9%;height:42%;
+  background:currentColor;border-radius:1em;
+  transform-origin:50% 100%;
+  transform:translate(-50%,-100%) rotate(var(--dial,0deg));
+}
+
+@media (prefers-reduced-motion:reduce){
+  /* No snow and no detune: the picture is simply always tuned in. */
+  .crt__snow{display:none}
+  .lay--bio{filter:none;opacity:1}
+}
 
 /* ---- 04 contact ---- */
 /* Bottom-aligned, not centred: the comp puts the mail and Instagram marks at
@@ -612,7 +692,7 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
      about 300px of height. There is no size at which the text fits the glass,
      so rather than shrink it past reading the frame is dropped and the bio is
      set as an ordinary paragraph. */
-  .el--crt{display:none}
+  .el--crt,.crt__snow,.crt__dial{display:none}
   .lay--bio{left:7%;top:21%;width:86%;margin-left:0;text-align:left;
     font-size:max(12px, min(4.05cqw, 2.2svh))}
   .el--cd-a{left:-18%;top:-2%;width:62%;height:auto}

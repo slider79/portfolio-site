@@ -7,6 +7,11 @@
      section's own paper once blended, so the bio copy positioned over it reads
      as ordinary ink and never has to fight the artwork underneath.
 
+     The large knob is drawn WITHOUT a pointer. js/crt.js overlays a live
+     needle on it, positioned from the numbers below, so the tuning dial can
+     actually turn. Its centre is (838,164) before the group rotation and
+     (834,157) after it, which is 83.4% across and 21.8% down.
+
      Aperture geometry, needed by the CSS that positions the copy over it:
        x 60 to 700, y 52 to 552, so 6% to 70% across and 7.2% to 76.7% down.
      Change the drawing and those numbers move with it.
@@ -61,7 +66,6 @@
   <g stroke="#111" fill="none">
     <circle cx="838" cy="164" r="58" stroke-width="8"/>
     <circle cx="838" cy="164" r="40" stroke-width="5" opacity=".6"/>
-    <path d="M838 164l0-40" stroke-width="9" stroke-linecap="round"/>
     <g stroke-width="4" opacity=".7">
       <path d="M838 90v-12M896 164h12M838 238v12M780 164h-12"/>
       <path d="M880 122l9-9M880 206l9 9M796 206l-9 9M796 122l-9-9"/>
@@ -91,7 +95,7 @@
   <!-- badge -->
   <g font-family="Helvetica, Arial, sans-serif" font-size="26" font-weight="700"
      font-style="italic" fill="#111" opacity=".8">
-    <text x="806" y="524">SJ-88</text>
+    <text x="806" y="524">SJ-79</text>
   </g>
 
   <!-- ===== speaker grille, along the bottom ===== -->

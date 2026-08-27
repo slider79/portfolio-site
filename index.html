@@ -241,6 +241,17 @@
          still plain text on plain paper: it needs nothing from the artwork to
          be readable, and degrades to a normal paragraph if the SVG never
          arrives. -->
+    <!-- Static and the tuning dial. Both are added by CSS and driven by
+         js/crt.js; neither is required to read the bio. The screen starts
+         TUNED IN, and the detune only happens once the script is alive and
+         the section is reached, so a failed stylesheet or a dead script
+         leaves plain legible copy rather than a wall of noise. -->
+    <canvas class="crt__snow" id="crtSnow" aria-hidden="true"></canvas>
+    <button class="crt__dial" id="crtDial" type="button"
+            role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"
+            aria-label="Tuning dial. Drag or use the arrow keys to tune the picture.">
+      <i class="crt__needle" aria-hidden="true"></i>
+    </button>
     <div class="lay lay--bio">
       <p>I'm Muhammad Shuja Jamal, a software engineering student at FAST NUCES Lahore, currently interning across AI, networking and security at once.</p>
       <p>I build across the stack: React and Next.js on the front, Node and Django behind it, and increasingly Python where the interesting problems are. Lately that has meant AI agents that call tools, retrieval systems that stay honest about their sources, and a peer-to-peer network with no server in the middle of it. I like turning messy problems into clean, well-documented software, and I would rather test a tool myself than read what its landing page claims.</p>
@@ -284,6 +295,7 @@
 <script src="js/contours.js"></script>
 <script src="js/main.js"></script>
 <script src="js/hypertext.js"></script>
+<script src="js/crt.js"></script>
 <script src="js/projects.js"></script>
 <script src="js/track.js"></script>
 <script type="module" src="js/psp.js"></script>
