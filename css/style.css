@@ -430,9 +430,9 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
 .about{height:100svh;display:grid;place-items:center}
 .el--cd-a  {left:-5.99%;top:-23.61%;width:41.35%}
 .el--cd-b  {left:82.08%;top:45.83%;width:29.90%}
-.lay--abouth{left:50%;top:26%;transform:translate(-50%,var(--ty,0));font-family:var(--f-vcr);font-size:3.3cqw;letter-spacing:.06em}
+.lay--abouth{left:50%;top:16%;transform:translate(-50%,var(--ty,0));font-family:var(--f-vcr);font-size:3.3cqw;letter-spacing:.06em}
 .lay--bio{
-  left:50%;top:38%;width:44%;margin-left:-22%;
+  left:50%;top:30%;width:44%;margin-left:-22%;
   /* Clamped against the viewport HEIGHT as well as the stage width.
 
      cqw alone sizes this from the stage's width, but the room it has to fill
@@ -442,12 +442,113 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
      term only bites once the window is too short for the width-derived size,
      so at 16:9 and taller nothing changes. The floor stops a very short
      landscape window shrinking it into unreadability. */
-  font-size:max(13px, min(1.78cqw, 2.9svh));
-  line-height:1.3;letter-spacing:0;
-  text-align:justify;text-justify:inter-word;hyphens:auto;
+  /* Sized against the SET's height budget, not the column's. Putting the copy
+     inside a bezel costs roughly 150px of chrome, so the type that fitted a
+     bare column overflowed the section by 281px once it was boxed. The height
+     term is what actually binds here, hence the tighter svh clamp. */
+  font-size:max(12px, min(1.3cqw, 2.05svh));
+  /* Leading opened from 1.3, which was tight for a paragraph at this size and
+     tighter still inside a screen. Justification dropped with it: on a measure
+     this narrow it was stretching lines into visible rivers of white, and that
+     reads worse on a tube than a ragged edge ever does. */
+  line-height:1.5;letter-spacing:0;
+  text-align:left;
 }
 .lay--bio p{margin:0}
-.lay--bio p+p{margin-top:.15em}
+.lay--bio p+p{margin-top:.6em}
+
+/* ============ THE SET ============
+   The bio is shown on a CRT, drawn entirely in CSS.
+
+   Deliberately NOT locked to 4:3. A real tube ratio was the first instinct
+   and it does not survive contact with the content: three paragraphs in a
+   4:3 box at phone width need roughly twice the height the ratio allows, so
+   the copy would either overflow or have to shrink past readable. The set
+   therefore wraps whatever height the text needs, and the CRT reads as a CRT
+   from its treatment, the bezel, the curve, the scanlines, the glow and the
+   chin, rather than from its proportions. Content decides the box.
+
+   Everything is paper and ink relative, so the whole set inverts with the
+   page rather than being a black rectangle stranded on white. */
+.crt{
+  --shell:color-mix(in srgb, var(--on-dark) 13%, var(--paper));
+  --shell-lit:color-mix(in srgb, var(--on-dark) 20%, var(--paper));
+  --shell-deep:color-mix(in srgb, var(--on-dark) 7%, var(--paper));
+  --glass:color-mix(in srgb, var(--on-dark) 4%, var(--paper));
+  --seam:color-mix(in srgb, var(--on-dark) 26%, transparent);
+
+  box-sizing:border-box;
+  padding:2.2% 2.2% 0;
+  border-radius:1.6% / 2.2%;
+  background:linear-gradient(180deg,
+    var(--shell-lit) 0, var(--shell) 30%, var(--shell) 72%, var(--shell-deep) 100%);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--on-dark) 22%, transparent),
+    inset 0 0 0 1px var(--seam),
+    0 2% 4% -1% color-mix(in srgb, #000 45%, transparent);
+}
+
+/* The tube. Corner radii are given as separate horizontal and vertical
+   values, which is what gives the glass its barrel rather than a plain
+   rounded rectangle: the curve is shallower across than down, exactly as it
+   is on a real screen. */
+.crt__glass{
+  position:relative;
+  padding:5.5% 5.5% 6%;
+  border-radius:4% / 6%;
+  background:
+    /* the vignette a tube always has toward its corners */
+    radial-gradient(118% 128% at 50% 42%,
+      transparent 0 52%, color-mix(in srgb, #000 34%, transparent) 100%),
+    var(--glass);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--on-dark) 12%, transparent),
+    inset 0 3px 12px -4px color-mix(in srgb, #000 60%, transparent),
+    /* the phosphor haze the glass throws back into the bezel */
+    0 0 3% color-mix(in srgb, var(--on-dark) 14%, transparent);
+  overflow:hidden;
+}
+
+/* Scanlines and the glare, both non-interactive so selecting the copy still
+   works. Sized in em so the line pitch tracks the type rather than the
+   viewport: scanlines that do not scale with the text stop looking like a
+   raster and start looking like a stripe pattern. */
+.crt__glass::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(180deg,
+    color-mix(in srgb, #000 22%, transparent) 0 1px,
+    transparent 1px 3px);
+  opacity:.55;
+}
+/* the reflection sitting on the front of the glass */
+.crt__glass::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(163deg,
+    color-mix(in srgb, var(--on-dark) 8%, transparent) 0 12%, transparent 38%);
+}
+.crt__glass p{position:relative;z-index:1}
+
+/* ---- the chin ---- */
+.crt__chin{
+  display:flex;align-items:center;gap:6%;
+  padding:1.6% 3% 2%;
+}
+.crt__lamp{
+  width:.5em;height:.5em;border-radius:50%;
+  background:color-mix(in srgb, var(--on-dark) 62%, transparent);
+  box-shadow:0 0 .5em color-mix(in srgb, var(--on-dark) 45%, transparent);
+}
+.crt__badge{
+  font-family:var(--f-vcr);font-size:.62em;letter-spacing:.22em;
+  opacity:.4;
+}
+/* the speaker or vent grille, filling whatever is left of the chin */
+.crt__dial{
+  flex:1;height:.42em;border-radius:.21em;
+  background:repeating-linear-gradient(90deg,
+    color-mix(in srgb, var(--on-dark) 22%, transparent) 0 1px,
+    transparent 1px 4px);
+}
 
 /* ---- 04 contact ---- */
 /* Bottom-aligned, not centred: the comp puts the mail and Instagram marks at
@@ -589,8 +690,11 @@ kbd{font-family:var(--f-vcr);font-size:.8rem;border:1px solid currentColor;opaci
   .lay--abouth{left:50%;top:14%;transform:translate(-50%,var(--ty,0));font-size:min(7.5cqw,8svh)}
   /* same width-versus-height clamp as the desktop rule: a landscape phone is
      still under this breakpoint but has barely any height to give */
-  .lay--bio{left:7%;top:24%;width:86%;margin-left:0;text-align:left;
-    font-size:max(12px, min(4.4cqw, 2.55svh))}
+  /* The set costs about 80px of bezel and chin on top of the copy, so the
+     type has to come down to keep the whole thing inside one screen. At the
+     old size it finished 17px past the section. */
+  .lay--bio{left:7%;top:21%;width:86%;margin-left:0;text-align:left;
+    font-size:max(12px, min(4.05cqw, 2.2svh))}
   .el--cd-a{left:-18%;top:-2%;width:62%;height:auto}
   .el--cd-b{left:58%;top:74%;width:54%;height:auto}
 
